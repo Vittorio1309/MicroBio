@@ -1,4 +1,4 @@
-﻿Vittorio Uecker
+﻿Vittorio Uecker https://github.com/Vittorio1309/Lab1.git
 Adolfo Heerdt https://github.com/Adolfexx
 Daniel Henrique Todao - https://github.com/danieltodao/LAB1.git
 
