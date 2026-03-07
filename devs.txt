@@ -1,5 +1,5 @@
 ﻿Vittorio Uecker
-Adolfo Heerdt
+Adolfo Heerdt https://github.com/Adolfexx
 Daniel Henrique Todao - https://github.com/danieltodao/LAB1.git
 
 Keslyn Bus
