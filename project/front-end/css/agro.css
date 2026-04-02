@@ -1,59 +1,69 @@
 .section {
-  height: 1110px;
+  min-height: 100vh;
   position: relative;
-  width: 1312px;
+  width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../img/planta-o-moderna-vista-aerea.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 .section .container {
-  height: 1020px;
   position: relative;
-}
-
-.section .plantao-moderna {
-  height: calc(100% - 120px);
-  left: 0;
-  position: absolute;
-  top: 120px;
   width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  z-index: 1;
 }
 
 .section .overlay {
   background-color: #0f172980;
-  height: 100%;
-  left: 0;
   position: absolute;
   top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 .section .heading-decis-es {
   color: #ffffff;
   font-family: "Plus Jakarta Sans-Bold", Helvetica;
-  font-size: 72px;
+  font-size: clamp(32px, 8vw, 72px);
   font-weight: 700;
-  height: 235px;
-  left: calc(50.00% - 423px);
   letter-spacing: -3.60px;
-  line-height: 72px;
-  position: absolute;
+  line-height: 1.2;
   text-align: center;
-  top: 314px;
-  width: 850px;
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .section .an-lises {
   color: #ffffffcc;
   font-family: "IBM Plex Sans-Regular", Helvetica;
-  font-size: 20px;
+  font-size: clamp(16px, 2.5vw, 20px);
   font-weight: 400;
-  height: 55px;
-  left: calc(50.00% - 303px);
   letter-spacing: 0;
   line-height: 28px;
-  position: absolute;
   text-align: center;
-  top: 564px;
-  width: 607px;
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .section .button {
@@ -62,10 +72,18 @@
   border-radius: 9999px;
   box-sizing: border-box;
   height: 44px;
-  left: calc(50.00% - 239px);
-  position: absolute;
-  top: 652px;
   width: 251px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.section .button:hover {
+  background-color: #048056;
 }
 
 .section .button-shadow {
@@ -86,24 +104,24 @@
   font-family: "IBM Plex Sans-Medium", Helvetica;
   font-size: 16px;
   font-weight: 500;
-  height: 20px;
   justify-content: center;
-  left: calc(50.00% - 94px);
   letter-spacing: 0;
   line-height: 24px;
-  position: absolute;
   text-align: center;
-  top: calc(50.00% - 10px);
   white-space: nowrap;
-  width: 164px;
+  position: relative;
+  z-index: 1;
 }
 
 .section .SVG {
   height: 16px;
-  left: calc(50.00% + 78px);
-  position: absolute;
-  top: calc(50.00% - 8px);
   width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .section .vector {
@@ -135,10 +153,15 @@
   display: flex;
   height: 44px;
   justify-content: center;
-  left: calc(50.00% + 29px);
-  position: absolute;
-  top: 652px;
   width: 210px;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.section .div-wrapper:hover {
+  background-color: #ffffff33;
 }
 
 .section .div {
