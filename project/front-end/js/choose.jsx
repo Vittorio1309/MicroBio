@@ -1,9 +1,9 @@
+import React from "react";
 import backgroundImageWithOverlay from "./background-image-with-overlay.png";
 import icon2 from "./icon-2.svg";
 import icon from "./icon.svg";
-import image from "./image.svg";
 import microbioHero1 from "./microbio-hero-1.png";
-import "./css/choose.css";
+import "../css/choose.css";
 
 export const Body = () => {
   return (
