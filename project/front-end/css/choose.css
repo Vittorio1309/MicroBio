@@ -32,6 +32,8 @@
   position: absolute;
   top: 0;
   width: 100%;
+  object-fit: cover; /* ESSENCIAL: faz a foto preencher o fundo sem esticar */
+  z-index: 0;
 }
 
 .body .overlay {
@@ -53,20 +55,25 @@
 }
 
 .body .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
   height: 372px;
   max-width: 448px;
   position: relative;
   width: 416px;
+  padding: 24px 16px;
+  text-align: center;
 }
 
 .body .heading {
   align-items: center;
   display: flex;
   flex-direction: column;
-  left: 24px;
-  position: absolute;
-  top: 106px;
-  width: calc(100% - 48px);
+  position: relative;
+  width: 100%;
 }
 
 .body .text {
@@ -92,10 +99,8 @@
   align-items: center;
   display: flex;
   flex-direction: column;
-  left: 24px;
-  position: absolute;
-  top: 170px;
-  width: calc(100% - 48px);
+  position: relative;
+  width: 100%;
 }
 
 .body .text-wrapper {
@@ -103,15 +108,13 @@
   font-family: "Inter-Medium", Helvetica;
   font-size: 20px;
   font-weight: 500;
-  height: 84px;
   letter-spacing: 0;
   line-height: 28px;
-  margin-left: -13.85px;
-  margin-right: -13.85px;
-  margin-top: -1.00px;
+  margin: 0 auto;
   position: relative;
   text-align: center;
-  width: 395.7px;
+  width: 100%;
+  max-width: 395px;
 }
 
 .body .background {
@@ -121,10 +124,11 @@
   display: inline-flex;
   gap: 8px;
   justify-content: center;
-  left: calc(50.00% - 135px);
+  margin: 0 auto;
   padding: 16px 32px;
-  position: absolute;
-  top: 286px;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
 }
 
 .body .overlay-shadow {
@@ -171,19 +175,25 @@
 }
 
 .body .overlay-2 {
-  background-color: #94426099;
+  background-color: rgba(148, 66, 96, 0.28);
   height: 100%;
   left: 0;
   position: absolute;
   top: 0;
   width: 100%;
+  z-index: 2; /* Fica acima da imagem */
 }
 
 .body .content-2 {
-  height: 358px;
-  max-width: 448px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
   position: relative;
-  width: 448px;
+  z-index: 3;
+  padding: 24px 16px;
+  text-align: center;
 }
 
 .body .microbio-hero {
@@ -219,10 +229,8 @@
   align-items: center;
   display: flex;
   flex-direction: column;
-  left: 24px;
-  position: absolute;
-  top: 178px;
-  width: calc(100% - 48px);
+  position: relative;
+  width: 100%;
 }
 
 .body .p {
@@ -246,10 +254,11 @@
   display: inline-flex;
   gap: 8px;
   justify-content: center;
-  left: calc(50.00% - 122px);
+  margin: 0 auto;
   padding: 16px 32px;
-  position: absolute;
-  top: 286px;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
 }
 
 .body .text-3 {
@@ -275,10 +284,13 @@
   display: flex;
   flex-direction: column;
   height: 106px;
-  left: 584px;
+  left: 50%; /* Move para o meio */
+  transform: translateX(-50%); /* Ajusta o centro exato */
   position: absolute;
-  top: 459px;
+  top: 50%; /* Centraliza verticalmente também se desejar */
+  margin-top: -53px; /* Metade da altura para ajuste fino */
   width: 112px;
+  z-index: 20; /* Fica por cima de tudo mesmo */
 }
 
 .body .background-3 {
@@ -366,14 +378,13 @@
 }
 
 .body .header-top {
-  align-items: flex-start;
   display: flex;
   justify-content: center;
   left: 0;
-  padding: 32px 0px;
   position: absolute;
-  top: 0;
+  top: 32px;
   width: 100%;
+  z-index: 20;
 }
 
 .body .overlay-border {
@@ -408,15 +419,15 @@
 }
 
 .body .footer-information {
-  align-items: flex-end;
+  align-items: center;
   bottom: 0;
   display: flex;
-  gap: 755.23px;
-  justify-content: space-around;
+  justify-content: center;
   left: 0;
   padding: 24px;
   position: absolute;
   width: 100%;
+  z-index: 30;
 }
 
 .body .overlay-border-2 {
@@ -447,4 +458,17 @@
   position: relative;
   white-space: nowrap;
   width: 334.77px;
+}
+
+.body .overlay, .body .overlay-2 {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 2; /* Camada da cor */
+}
+.body .content, .body .content-2 {
+  position: relative;
+  z-index: 10; /* Camada do conteúdo (bem na frente) */
 }
