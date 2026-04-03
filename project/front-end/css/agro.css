@@ -10,6 +10,7 @@
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+  margin-top: 64px;
 }
 
 .section .container {
@@ -180,3 +181,417 @@
   white-space: nowrap;
   width: 143.98px;
 }
+.nav {
+  align-items: flex-start;
+  background-color: #f9f9f9cc;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-color: #c0c9bb4c;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  overflow-x: hidden;
+}
+
+.nav .container {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+  height: 64px;
+  max-width: 100%;
+  padding: 0px 32px;
+  position: relative;
+  width: 100%;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.nav .text-wrapper {
+  align-items: flex-start;
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  position: relative;
+}
+
+.nav .text {
+  align-items: center;
+  color: #14532d;
+  display: flex;
+  font-family: "Manrope-Bold", Helvetica;
+  font-size: 24px;
+  font-weight: 700;
+  height: 32px;
+  letter-spacing: -1.20px;
+  line-height: 32px;
+  margin-top: -1.00px;
+  position: relative;
+  white-space: nowrap;
+  width: 92.34px;
+}
+
+.nav .div {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  gap: 40px;
+  position: relative;
+  justify-content: center;
+}
+
+.nav .link {
+  all: unset;
+  align-items: center;
+  border-bottom: 2px solid #15803d;
+  color: #15803d;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: "Inter-SemiBold", Helvetica;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 0 4px 0;
+  position: relative;
+  white-space: nowrap;
+  transition: 0.3s ease;
+}
+
+.nav .link:hover {
+  opacity: 0.8;
+}
+
+.nav .text-2 {
+  align-items: center;
+  color: #15803d;
+  display: flex;
+  font-family: "Inter-SemiBold", Helvetica;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.35px;
+  line-height: 20px;
+  position: relative;
+  white-space: nowrap;
+}
+
+.nav .text-3 {
+  align-items: center;
+  color: #41493e;
+  display: flex;
+  font-family: "Inter-SemiBold", Helvetica;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.35px;
+  line-height: 20px;
+  position: relative;
+  white-space: nowrap;
+}
+
+.nav .text-4 {
+  align-items: center;
+  color: #41493e;
+  display: flex;
+  font-family: "Inter-SemiBold", Helvetica;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.35px;
+  line-height: 20px;
+  position: relative;
+  white-space: nowrap;
+}
+
+.nav .text-5 {
+  align-items: center;
+  color: #41493e;
+  display: flex;
+  font-family: "Inter-SemiBold", Helvetica;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.35px;
+  line-height: 20px;
+  position: relative;
+  white-space: nowrap;
+}
+
+.nav .nav-link {
+  all: unset;
+  align-items: center;
+  color: #41493e;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: "Inter-SemiBold", Helvetica;
+  font-size: 14px;
+  font-weight: 600;
+  position: relative;
+  white-space: nowrap;
+  transition: 0.3s ease;
+}
+
+.nav .nav-link:hover {
+  color: #15803d;
+}
+
+.nav .nav-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.nav .button-login {
+  all: unset;
+  background: none;
+  border: none;
+  color: #15803d;
+  font-family: "Inter-SemiBold", Helvetica;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  white-space: nowrap;
+  transition: 0.3s ease;
+}
+
+.nav .button-login:hover {
+  opacity: 0.8;
+}
+
+.nav .button-orcamento {
+  all: unset;
+  background-color: #15803d;
+  color: #ffffff;
+  font-family: "Inter-SemiBold", Helvetica;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: 0.3s ease;
+}
+
+.nav .button-orcamento:hover {
+  background-color: #048056;
+}
+
+.background-border {
+  background-color: #ffffff;
+  border: 1px solid;
+  border-color: #e1e7ef;
+  border-radius: 24px;
+  height: 186px;
+  position: relative;
+  width: 945px;
+}
+
+.background-border .overlay-shadow {
+  background-color: #ffffff01;
+  border-radius: 24px;
+  box-shadow: 0px 25px 50px -12px #00000040;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.background-border .background {
+  align-items: center;
+  background-color: #edfdf2;
+  border-radius: 12px;
+  display: flex;
+  height: 48px;
+  justify-content: center;
+  left: 49px;
+  position: absolute;
+  top: 49px;
+  width: 48px;
+}
+
+.background-border .SVG {
+  height: 24px;
+  position: relative;
+  width: 24px;
+}
+
+.background-border .vector {
+  height: 95.83%;
+  left: 15.06%;
+  position: absolute;
+  top: 4.17%;
+  width: 84.94%;
+}
+
+.background-border .img {
+  height: 95.83%;
+  left: 31.25%;
+  position: absolute;
+  top: 4.17%;
+  width: 68.75%;
+}
+
+.background-border .vector-2 {
+  height: 37.50%;
+  left: 25.00%;
+  position: absolute;
+  top: 62.50%;
+  width: 75.00%;
+}
+
+.background-border .heading-an-lises {
+  align-items: center;
+  color: #0f1729;
+  display: flex;
+  font-family: "Plus Jakarta Sans-SemiBold", Helvetica;
+  font-size: 16px;
+  font-weight: 600;
+  height: 24px;
+  left: 113px;
+  letter-spacing: 0;
+  line-height: 24px;
+  position: absolute;
+  top: 49px;
+  white-space: nowrap;
+  width: 132px;
+}
+
+.background-border .laudos-t-cnicos-com {
+  color: #65758b;
+  font-family: "IBM Plex Sans-Regular", Helvetica;
+  font-size: 14px;
+  font-weight: 400;
+  height: 58px;
+  left: 113px;
+  letter-spacing: 0;
+  line-height: 20px;
+  position: absolute;
+  top: 78px;
+  width: 184px;
+}
+
+.background-border .SVG-wrapper {
+  align-items: center;
+  background-color: #edfdf2;
+  border-radius: 12px;
+  display: flex;
+  height: 48px;
+  justify-content: center;
+  left: 352px;
+  position: absolute;
+  top: 49px;
+  width: 48px;
+}
+
+.background-border .vector-3 {
+  height: 95.83%;
+  left: 12.41%;
+  position: absolute;
+  top: 4.17%;
+  width: 87.59%;
+}
+
+.background-border .vector-4 {
+  height: 54.17%;
+  left: 4.17%;
+  position: absolute;
+  top: 45.83%;
+  width: 95.83%;
+}
+
+.background-border .heading {
+  align-items: center;
+  color: #0f1729;
+  display: flex;
+  font-family: "Plus Jakarta Sans-SemiBold", Helvetica;
+  font-size: 16px;
+  font-weight: 600;
+  height: 24px;
+  left: 416px;
+  letter-spacing: 0;
+  line-height: 24px;
+  position: absolute;
+  top: 49px;
+  white-space: nowrap;
+  width: 132px;
+}
+
+.background-border .dados-que-otimizam-o {
+  color: #65758b;
+  font-family: "IBM Plex Sans-Regular", Helvetica;
+  font-size: 14px;
+  font-weight: 400;
+  height: 38px;
+  left: 416px;
+  letter-spacing: 0;
+  line-height: 20px;
+  position: absolute;
+  top: 78px;
+  width: 185px;
+}
+
+.background-border .div-wrapper {
+  align-items: center;
+  background-color: #edfdf2;
+  border-radius: 12px;
+  display: flex;
+  height: 48px;
+  justify-content: center;
+  left: 656px;
+  position: absolute;
+  top: 49px;
+  width: 48px;
+}
+
+.background-border .vector-5 {
+  height: 95.84%;
+  left: 12.50%;
+  position: absolute;
+  top: 4.16%;
+  width: 87.50%;
+}
+
+.background-border .vector-6 {
+  height: 62.50%;
+  left: 33.33%;
+  position: absolute;
+  top: 37.50%;
+  width: 66.67%;
+}
+
+.background-border .heading-confian-a {
+  align-items: center;
+  color: #0f1729;
+  display: flex;
+  font-family: "Plus Jakarta Sans-SemiBold", Helvetica;
+  font-size: 16px;
+  font-weight: 600;
+  height: 24px;
+  left: 720px;
+  letter-spacing: 0;
+  line-height: 24px;
+  position: absolute;
+  top: 49px;
+  white-space: nowrap;
+  width: 80px;
+}
+
+.background-border .mais-de {
+  color: #65758b;
+  font-family: "IBM Plex Sans-Regular", Helvetica;
+  font-size: 14px;
+  font-weight: 400;
+  height: 38px;
+  left: 720px;
+  letter-spacing: 0;
+  line-height: 20px;
+  position: absolute;
+  top: 78px;
+  width: 176px;
+}
+
