@@ -1,20 +1,60 @@
 import React from "react";
 import arrowIcon from "../img/icon-2.svg";
-import plantaOModernaVistaAerea from "../img/planta-o-moderna-vista-aerea.png";
 import "../css/agro.css";
+
+
+export const Nav = () => {
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="nav">
+      <div className="container">
+        <div className="text-wrapper">
+          <div className="text">MicroBio</div>
+        </div>
+
+        <div className="div">
+          <button className="link" onClick={() => scrollToSection('inicio')}>
+            <div className="text-2">Início</div>
+          </button>
+
+          <button className="nav-link" onClick={() => scrollToSection('servicos')}>
+            <div className="text-3">Serviços</div>
+          </button>
+
+          <button className="nav-link" onClick={() => scrollToSection('sobre')}>
+            <div className="text-4">Sobre</div>
+          </button>
+
+          <button className="nav-link" onClick={() => scrollToSection('contato')}>
+            <div className="text-5">Contato</div>
+          </button>
+        </div>
+
+        <div className="nav-actions">
+          <button className="button-login">
+            <div className="text">Login</div>
+          </button>
+
+          <button className="button-orcamento">
+            <div className="div">Solicitar Orçamento</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const Section = () => {
   return (
     <div className="section">
+      <div className="overlay" />
       <div className="container">
-        <img
-          className="plantao-moderna"
-          alt="Plantao moderna"
-          src={plantaOModernaVistaAerea}
-        />
-
-        <div className="overlay" />
-
         <p className="heading-decis-es">
           Decisões baseadas em
           <br />
@@ -29,19 +69,76 @@ export const Section = () => {
           agronegócio exige.
         </p>
 
-        <button className="button">
-          <div className="button-shadow" />
+        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+          <button className="button">
+            <div className="button-shadow" />
+            <div className="text-wrapper">Iniciar Análise de Solo</div>
+            <div className="SVG">
+              <img className="img" alt="Vector" src={arrowIcon} />
+            </div>
+          </button>
 
-          <div className="text-wrapper">Iniciar Análise de Solo</div>
+          <button className="div-wrapper">
+            <div className="div">Acessar Resultados</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
+
+import vector from "../img/svg-1.svg";
+import vector2 from "../img/svg-2.svg";
+import vector3 from "../img/svg-3.svg";
+
+
+export const BackgroundBorder = () => {
+  return (
+    <div className="background-border">
+      <div className="overlay-shadow" />
+
+      <div className="border-column">
+        <div className="background">
           <div className="SVG">
-            <img className="img" alt="Vector" src={arrowIcon} />
+            <img className="vector" alt="Vector" src={vector} />
           </div>
-        </button>
+        </div>
+        <div className="heading-an-lises">Análises Precisas</div>
+        <p className="laudos-t-cnicos-com">
+          Laudos técnicos com
+          <br />
+          metodologias reconhecidas e<br />
+          certificadas.
+        </p>
+      </div>
 
-        <button className="div-wrapper">
-          <div className="div">Acessar Resultados</div>
-        </button>
+      <div className="border-column">
+        <div className="SVG-wrapper">
+          <div className="SVG">
+            <img className="vector-3" alt="Vector" src={vector2} />
+          </div>
+        </div>
+        <div className="heading">Sustentabilidade</div>
+        <p className="dados-que-otimizam-o">
+          Dados que otimizam o uso de
+          <br />
+          insumos e preservam o solo.
+        </p>
+      </div>
+
+      <div className="border-column">
+        <div className="div-wrapper">
+          <div className="SVG">
+            <img className="vector-5" alt="Vector" src={vector3} />
+          </div>
+        </div>
+        <div className="heading-confian-a">Confiança</div>
+        <p className="mais-de">
+          Mais de 1.450 propriedades
+          <br />
+          monitoradas no último ano.
+        </p>
       </div>
     </div>
   );
