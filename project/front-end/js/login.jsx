@@ -1,8 +1,9 @@
-import icon from "./icon.svg";
-import icon2 from "./icon-2.svg";
-import icon3 from "./icon-3.svg";
-import image from "./image.svg";
-import "./style.css";
+import icon from "../img/login/email-icon.svg";
+import icon2 from "../img/login/cadeado-icon.svg";
+import icon3 from "..img/login/seta-entrar.svg"
+import icon4 from "..img/login/olho-senha.svg"
+import image from "../img/login/campo-fundo.png";
+import "../css/login.css";
 
 export const Body = () => {
   return (
@@ -56,7 +57,7 @@ export const Body = () => {
                   />
                 </div>
                 <div className="img-wrapper">
-                  <img className="img" alt="Icon" src={image} />
+                  <img className="img" alt="Icon" src={icon4} />
                 </div>
                 <div className="button">
                   <div className="container-5">
