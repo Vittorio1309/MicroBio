@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Body } from './project/front-end/js/login.jsx'
-import './project/front-end/css/login.css'
+import { Body } from './login.jsx'
+import '../css/login.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
