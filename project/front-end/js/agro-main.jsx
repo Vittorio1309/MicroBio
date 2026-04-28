@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Nav, Section, BackgroundBorder } from './agro.jsx';
+import Orcamento from './orcamento.jsx';
 import '../css/global.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Nav />
-    <Section />
-    <BackgroundBorder />
+    {/* 2. Aqui nós mandamos o React renderizar apenas a sua tela de orçamento */}
+    <Orcamento />
   </React.StrictMode>
 );
