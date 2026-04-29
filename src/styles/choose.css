@@ -1,0 +1,287 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Reset base */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ─── ANIMAÇÕES ─── */
+@keyframes pulse-scale {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%       { transform: translate(-50%, -50%) scale(1.13); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+  50%       { box-shadow: 0 0 0 8px rgba(255,255,255,0.18), 0 4px 24px rgba(0,0,0,0.35); }
+}
+
+/* ─── CONTAINER ─── */
+.choose-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ─── LOGO ─── */
+.top-logo {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 10px 30px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #1b5e20;
+  white-space: nowrap;
+}
+
+/* ─── SELETOR CENTRAL COM PULSO ─── */
+.center-selector {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: pulse-scale 2s ease-in-out infinite;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.center-selector.selector-hidden {
+  opacity: 0;
+  animation: none;
+}
+
+.selector-icon {
+  background: white;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.selector-icon img {
+  width: 22px;
+}
+
+.selector-label {
+  background: #111;
+  color: white;
+  font-size: 0.65rem;
+  padding: 3px 12px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+/* ─── SEÇÕES ─── */
+.section {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: flex 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+/* Seção ativa cresce */
+.hovering-agro .agro,
+.hovering-saude .saude {
+  flex: 1.65;
+}
+
+/* Seção inativa encolhe */
+.hovering-agro .saude,
+.hovering-saude .agro {
+  flex: 0.35;
+}
+
+.section-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.section-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transition: opacity 0.5s ease;
+}
+
+.agro-overlay  { background: rgba(20, 80, 20, 0.35); }
+.saude-overlay { background: rgba(0, 90, 80, 0.55); }
+
+/* Overlay mais intenso na seção ativa */
+.hovering-agro  .agro  .agro-overlay  { opacity: 1.0; }
+.hovering-saude .saude .saude-overlay { opacity: 1.0; }
+
+/* ─── CONTEÚDO ─── */
+.section-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  color: white;
+  padding: 0 12%;
+  max-width: 480px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Conteúdo da seção inativa some */
+.hovering-agro  .saude .section-content,
+.hovering-saude .agro  .section-content {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.section-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
+
+.section-description {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+}
+
+/* ─── BOTÕES ─── */
+.btn-access {
+  display: inline-flex;
+  align-items: center;
+  background: white;
+  padding: 13px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 10px;
+}
+
+.btn-access:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+.agro  .btn-access { color: #1b4a1b; }
+.saude .btn-access { color: #7a1a2e; }
+
+.btn-icon { width: 16px; }
+
+/* ─── TEXTO VERTICAL MICROBIO ─── */
+.vertical-text {
+  position: absolute;
+  font-size: 5.5rem;
+  font-weight: 900;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  right: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  color: rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 24px 14px;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+/* ─── FOOTER ─── */
+.choose-footer {
+  position: absolute;
+  bottom: 14px;
+  left: 24px;
+  z-index: 100;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+}
+
+/* ─── RESPONSIVIDADE MOBILE ─── */
+@media (max-width: 768px) {
+  html, body, #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .choose-container {
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .section {
+    flex: 1 !important; /* desativa animação de expand no mobile */
+    height: 50vh;
+    align-items: center;
+    justify-content: center;
+    transition: none;
+  }
+
+  .section-content {
+    opacity: 1 !important; /* garante que conteúdo sempre apareça */
+    transform: none !important;
+    padding: 0 8%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .section-description { display: none; }
+  .vertical-text       { display: none; }
+  .choose-footer       { display: none; }
+  .center-selector     { display: none !important; }
+
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .btn-access {
+    padding: 11px 22px;
+    font-size: 0.85rem;
+  }
+
+  .top-logo {
+    top: 12px;
+    font-size: 0.9rem;
+    padding: 8px 22px;
+  }
+}
+
+@media (max-width: 380px) {
+  .section-title { font-size: 1.6rem; }
+  .btn-access    { padding: 9px 16px; font-size: 0.78rem; }
+}

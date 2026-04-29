@@ -1,0 +1,129 @@
+/* filepath: src/styles/agro.css */
+/* Estilos da página agro */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav .text-wrapper {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+.nav .div {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav .link,
+.nav .nav-link {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.nav .link:hover,
+.nav .nav-link:hover {
+  color: #2e7d32;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.button-login {
+  padding: 0.5rem 1.5rem;
+  border: 2px solid #2e7d32;
+  border-radius: 8px;
+  color: #2e7d32;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.button-login:hover {
+  background: #2e7d32;
+  color: white;
+}
+
+.button-orcamento {
+  padding: 0.5rem 1.5rem;
+  background: #2e7d32;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.button-orcamento:hover {
+  background: #1b5e20;
+}
+
+.section {
+  padding: 8rem 2rem 4rem;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section .content {
+  max-width: 800px;
+  text-align: center;
+}
+
+.section .heading {
+  margin-bottom: 1.5rem;
+}
+
+.section .title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+.section .description {
+  margin-bottom: 2rem;
+  font-size: 1.25rem;
+  color: #666;
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: #2e7d32;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.cta-button:hover {
+  background: #1b5e20;
+}
+
+.background-border {
+  height: 200px;
+  background: linear-gradient(to bottom, #f5f5f5, white);
+}
