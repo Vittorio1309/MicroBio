@@ -1,47 +1,84 @@
 // filepath: src/features/agro/components/Nav.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+const sectionIds = ["inicio", "servicos", "sobre", "contato"] as const;
 
 export const Nav = () => {
+  const [currentSection, setCurrentSection] = useState<string>("inicio");
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visibleEntry?.target?.id) {
+          setCurrentSection(visibleEntry.target.id);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-25% 0px -45% 0px",
+        threshold: [0.2, 0.35, 0.5, 0.7],
+      }
+    );
+
+    sectionIds.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
   return (
     <div className="nav">
       <div className="container">
-        <div className="text-wrapper">
-          <div className="text">MicroBio</div>
-        </div>
+        <div className="text-wrapper">MicroBio</div>
 
-        <div className="div">
-          <button className="link" onClick={() => scrollToSection("inicio")}>
-            <div className="text-2">Início</div>
+        <div className="nav-menu">
+          <button
+            className={`nav-link ${currentSection === "inicio" ? "is-active" : ""}`}
+            onClick={() => scrollToSection("inicio")}
+          >
+            Início
           </button>
 
-          <button className="nav-link" onClick={() => scrollToSection("servicos")}>
-            <div className="text-3">Serviços</div>
+          <button
+            className={`nav-link ${currentSection === "servicos" ? "is-active" : ""}`}
+            onClick={() => scrollToSection("servicos")}
+          >
+            Serviços
           </button>
 
-          <button className="nav-link" onClick={() => scrollToSection("sobre")}>
-            <div className="text-4">Sobre</div>
+          <button
+            className={`nav-link ${currentSection === "sobre" ? "is-active" : ""}`}
+            onClick={() => scrollToSection("sobre")}
+          >
+            Sobre
           </button>
 
-          <button className="nav-link" onClick={() => scrollToSection("contato")}>
-            <div className="text-5">Contato</div>
+          <button
+            className={`nav-link ${currentSection === "contato" ? "is-active" : ""}`}
+            onClick={() => scrollToSection("contato")}
+          >
+            Contato
           </button>
         </div>
 
         <div className="nav-actions">
-          <button className="button-login">
-            <div className="text">Login</div>
-          </button>
-
-          <button className="button-orcamento">
-            <div className="div">Solicitar Orçamento</div>
-          </button>
+          <button className="button-login">Login</button>
+          <button className="button-orcamento">Solicitar Orçamento</button>
         </div>
       </div>
     </div>
