@@ -1,9 +1,11 @@
 // filepath: src/features/agro/components/Nav.tsx
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const sectionIds = ["inicio", "servicos", "sobre", "contato"] as const;
 
 export const Nav = () => {
+  const navigate = useNavigate();
   const [currentSection, setCurrentSection] = useState<string>("inicio");
 
   useEffect(() => {
@@ -54,12 +56,6 @@ export const Nav = () => {
             Início
           </button>
 
-          <button
-            className={`nav-link ${currentSection === "servicos" ? "is-active" : ""}`}
-            onClick={() => scrollToSection("servicos")}
-          >
-            Serviços
-          </button>
 
           <button
             className={`nav-link ${currentSection === "sobre" ? "is-active" : ""}`}
@@ -67,6 +63,15 @@ export const Nav = () => {
           >
             Sobre
           </button>
+
+
+          <button
+            className={`nav-link ${currentSection === "servicos" ? "is-active" : ""}`}
+            onClick={() => scrollToSection("servicos")}
+          >
+            Serviços
+          </button>
+       
 
           <button
             className={`nav-link ${currentSection === "contato" ? "is-active" : ""}`}
@@ -77,7 +82,7 @@ export const Nav = () => {
         </div>
 
         <div className="nav-actions">
-          <button className="button-login">Login</button>
+          <button className="button-login" onClick={() => navigate("/login")}>Login</button>
           <button className="button-orcamento">Solicitar Orçamento</button>
         </div>
       </div>

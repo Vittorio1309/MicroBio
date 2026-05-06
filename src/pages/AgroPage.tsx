@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Nav, Section, BackgroundBorder } from "../features/agro";
+import { Nav, Section, BackgroundBorder, Footer } from "../features/agro";
 
 export const AgroPage = () => {
   useEffect(() => {
@@ -17,6 +17,7 @@ export const AgroPage = () => {
       <Nav />
       <Section />
       <BackgroundBorder />
+      <Footer />
     </div>
   );
 };

@@ -8,33 +8,39 @@ import iconConfianca from "../../../assets/img/svg-3.png";
 import agronomistImage from "../../../assets/img/Professional Agronomist.png";
 import iconAnaliseGenetica from "../../../assets/img/Icon.png";
 import iconInsumosBiologicos from "../../../assets/img/Icon (1).png";
+import iconPhone from "../../../assets/img/Icon.svg";
+import iconEmail from "../../../assets/img/Icon.png";
+import iconAddress from "../../../assets/img/Icon (1).png";
+import overlay3 from "../../../assets/img/Overlay (3).png";
+import overlay4 from "../../../assets/img/Overlay (4).png";
+import overlay5 from "../../../assets/img/Overlay (5).png";
 import serviceOverlayPainel from "../../../assets/img/icon painel.png";
 import serviceOverlayDiagnostico from "../../../assets/img/icon diagnostico.png";
 import serviceOverlayConsultoria from "../../../assets/img/icon consultoria.png";
-import newsGradientIa from "../../../assets/img/Gradient.png";
-import newsGradientBioestimulantes from "../../../assets/img/Gradient (1).png";
-import newsGradientRegenerativa from "../../../assets/img/Gradient (2).png";
+import newsImageDrone from "../../../assets/img/Agricultural field with high tech drone.png";
+import newsImageSoybean from "../../../assets/img/Soybean crops healthy growth.png";
+import newsImageTechnician from "../../../assets/img/Agricultural technician using tablet in the field.png";
 
 const newsItems = [
   {
     category: "Tecnologia",
     date: "12 Out 2023",
     title: "O impacto da inteligência artificial no mapeamento de pragas",
-    image: newsGradientIa,
+    image: newsImageDrone,
     href: "https://blog.aegro.com.br/inteligencia-artificial-na-agricultura/",
   },
   {
     category: "Biotecnologia",
     date: "08 Out 2023",
     title: "Novos bioestimulantes prometem aumentar safra em até 15%",
-    image: newsGradientBioestimulantes,
+    image: newsImageSoybean,
     href: "https://www.agrolink.com.br/culturas/soja/noticia/nova-tecnologia-da-adama-turbina-produtividade-da-lavoura-e-reduz-efeitos-negativos-do-clima_209532.html",
   },
   {
     category: "Sustentabilidade",
     date: "05 Out 2023",
     title: "Práticas regenerativas: o futuro da fertilidade do solo brasileiro",
-    image: newsGradientRegenerativa,
+    image: newsImageTechnician,
     href: "https://forbes.com.br/forbesagro/2025/01/voce-sabe-o-que-e-agricultura-regenerativa/",
   },
 ];
@@ -159,7 +165,7 @@ export const Section = () => {
 
             <button className="about-link">
               Conheça nossa trajetória
-              <img className="about-link-icon" alt="" src={arrowIcon} />
+              <img className="about-link-icon" alt="" src={iconAnalises} />
             </button>
           </div>
         </div>
@@ -247,19 +253,73 @@ export const Section = () => {
 
       <section className="contact-section" id="contato">
         <div className="contact-container">
-          <p className="contact-eyebrow">Contato</p>
-          <h2 className="contact-title">Fale com a MicroBio Agro</h2>
-          <p className="contact-description">
-            Estamos prontos para ajudar sua operação com diagnósticos, inteligência e
-            suporte técnico especializado.
-          </p>
-          <div className="contact-actions">
-            <a className="contact-chip" href="mailto:contato@microbioagro.com.br">
-              contato@microbioagro.com.br
-            </a>
-            <a className="contact-chip" href="tel:+5500000000000">
-              (00) 0000-0000
-            </a>
+          <div className="contact-grid">
+            <div className="contact-details">
+              <p className="contact-eyebrow">Contato</p>
+              <h2 className="contact-title">Vamos otimizar sua safra?</h2>
+              <p className="contact-description">
+                Nossa equipe de especialistas está pronta para diagnosticar suas necessidades e propor as melhores soluções tecnológicas.
+              </p>
+
+              <div className="contact-card-grid">
+                <article className="contact-card">
+                  <div className="contact-card-bg">
+    
+                  </div>
+                  <div className="contact-card-icon">
+                    <img src={overlay3} alt="Telefone" />
+                  </div>
+                  <div>
+                    <p className="contact-card-label">Telefone</p>
+                    <a className="contact-card-value" href="tel:+5545999865119">
+                      (45) 9 9986-5119
+                    </a>
+                  </div>
+                </article>
+
+                <article className="contact-card">
+                  <div className="contact-card-bg">
+             
+                  </div>
+                  <div className="contact-card-icon">
+                    <img src={overlay5} alt="E-mail" />
+                  </div>
+                  <div>
+                    <p className="contact-card-label">E-mail</p>
+                    <a className="contact-card-value" href="mailto:microbiolaboratorio@gmail.com">
+                      microbiolaboratorio@gmail.com
+                    </a>
+                  </div>
+                </article>
+
+                <article className="contact-card">
+                  <div className="contact-card-bg">
+                 
+                  </div>
+                  <div className="contact-card-icon">
+                    <img src={overlay4} alt="Endereço" />
+                  </div>
+                  <div>
+                    <p className="contact-card-label">Endereço</p>
+                    <span className="contact-card-value">
+                      Rua Adoniran Barbosa, 133 / Jardim Gisela / Toledo - PR
+                    </span>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+            <div className="contact-map-panel">
+              <div className="map-panel">
+                <iframe
+                  title="Localização MicroBio"
+                  src="https://maps.google.com/maps?q=Rua%20Adoniran%20Barbosa%20133%20Jardim%20Gisela%20Toledo%20PR&amp;t=&amp;z=15&amp;ie=UTF8&amp;iwloc=&amp;output=embed"
+                  loading="lazy"
+                />
+                <div className="map-badge">    
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
