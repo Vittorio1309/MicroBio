@@ -45,7 +45,12 @@ const newsItems = [
   },
 ];
 
-export const Section = () => {
+/**
+ * Section Component
+ * Main content section of the Agro page
+ * Displays hero, features, and news
+ */
+export const Section: React.FC = () => {
   return (
     <>
       <section className="hero-section" id="inicio">

@@ -1,6 +1,10 @@
 import React from "react";
 
-export const Footer = () => {
+/**
+ * Footer Component
+ * Application footer with navigation and social links
+ */
+export const Footer: React.FC = () => {
   return (
     <footer className="agro-footer">
       <div className="footer-container">
@@ -8,16 +12,17 @@ export const Footer = () => {
           <span className="footer-logo">MicroBio</span>
         </div>
 
-        <nav className="footer-nav">
-          <a href="#inicio" className="footer-nav-link">
-            Início
-          </a>
-          <a href="#servicos" className="footer-nav-link">
-            Serviços
-          </a>
-          <a href="#sobre" className="footer-nav-link">
-            Sobre
-          </a>
+<nav className="footer-nav">
+  {/* Troque #inicio por / para voltar à Home, ou /#inicio se quiser a seção específica */}
+  <a href="/agro" className="footer-nav-link">
+    Início
+  </a>
+  <a href="/servicos" className="footer-nav-link">
+    Serviços
+  </a>
+  <a href="/sobre" className="footer-nav-link">
+    Sobre
+  </a>
           <a
             href="https://microbio.uniexames.com.br/cms/inicio"
             target="_blank"
