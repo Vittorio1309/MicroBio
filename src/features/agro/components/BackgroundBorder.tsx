@@ -1,6 +1,10 @@
 // filepath: src/features/agro/components/BackgroundBorder.tsx
 import React from "react";
 
-export const BackgroundBorder = () => {
+/**
+ * BackgroundBorder Component
+ * Subtle border element for visual separation
+ */
+export const BackgroundBorder: React.FC = () => {
   return <div className="background-border" />;
 };

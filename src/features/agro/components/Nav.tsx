@@ -4,7 +4,12 @@ import { useNavigate } from "react-router-dom";
 
 const sectionIds = ["inicio", "servicos", "sobre", "contato"] as const;
 
-export const Nav = () => {
+/**
+ * Nav Component
+ * Navigation bar with scroll detection for agro page
+ * Highlights active section based on viewport position
+ */
+export const Nav: React.FC = () => {
   const navigate = useNavigate();
   const [currentSection, setCurrentSection] = useState<string>("inicio");
 
@@ -44,7 +49,7 @@ export const Nav = () => {
   };
 
   return (
-    <div className="nav">
+    <nav className="nav">
       <div className="container">
         <div className="text-wrapper">MicroBio</div>
 
@@ -52,40 +57,58 @@ export const Nav = () => {
           <button
             className={`nav-link ${currentSection === "inicio" ? "is-active" : ""}`}
             onClick={() => scrollToSection("inicio")}
+            type="button"
+            aria-label="Ir para Início"
           >
             Início
           </button>
 
-
           <button
             className={`nav-link ${currentSection === "sobre" ? "is-active" : ""}`}
             onClick={() => scrollToSection("sobre")}
+            type="button"
+            aria-label="Ir para Sobre"
           >
             Sobre
           </button>
 
-
           <button
             className={`nav-link ${currentSection === "servicos" ? "is-active" : ""}`}
             onClick={() => scrollToSection("servicos")}
+            type="button"
+            aria-label="Ir para Serviços"
           >
             Serviços
           </button>
-       
 
           <button
             className={`nav-link ${currentSection === "contato" ? "is-active" : ""}`}
             onClick={() => scrollToSection("contato")}
+            type="button"
+            aria-label="Ir para Contato"
           >
             Contato
           </button>
         </div>
 
         <div className="nav-actions">
-          <button className="button-login" onClick={() => navigate("/login")}>Login</button>
-          <button className="button-orcamento">Solicitar Orçamento</button>
+          <button
+            className="button-login"
+            onClick={() => navigate("/login")}
+            type="button"
+          >
+            Login
+          </button>
+<button
+  className="button-orcamento"
+  type="button"
+  aria-label="Solicitar Orçamento"
+  onClick={() => navigate("/orcamento")} // Adicione esta linha
+>
+  Solicitar Orçamento
+</button>
         </div>
       </div>
-    </div>
+    </nav>
   );
 };

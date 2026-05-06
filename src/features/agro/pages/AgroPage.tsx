@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
-import { Nav, Section, BackgroundBorder, Footer } from "../features/agro";
+import { Nav, Section, BackgroundBorder, Footer } from "../components";
+import "../styles/agro.css";
 
-export const AgroPage = () => {
+export const AgroPage: React.FC = () => {
   useEffect(() => {
     document.documentElement.classList.add("agro-route");
     document.body.classList.add("agro-route");
