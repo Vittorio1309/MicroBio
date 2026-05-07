@@ -272,6 +272,30 @@ html, body {
   text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
+/* Mensagem de erro */
+.body .error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 6px;
+  color: #c33;
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding: 12px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Botão desabilitado */
+.body .CTA-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.body .CTA-button:disabled:hover {
+  background-color: #2d6a4f;
+  transform: none;
+}
+
 /* Responsivo 768px */
 @media (max-width: 768px) {
   .body .main-login-container {

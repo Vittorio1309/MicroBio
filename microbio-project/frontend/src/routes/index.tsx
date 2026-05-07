@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LoginPage } from "../pages/LoginPage";
 import { ChoosePage } from "../pages/ChoosePage";
 import { AgroPage } from "../pages/AgroPage";
+import { AdminPage } from "../pages/AdminPage";
+import { UserPage } from "../pages/UserPage";
 
 export const AppRoutes = () => {
   return (
@@ -12,6 +14,8 @@ export const AppRoutes = () => {
         <Route path="/" element={<ChoosePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/agro" element={<AgroPage />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/user" element={<UserPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,10 +1,62 @@
 // filepath: src/pages/LoginPage.tsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 import campoFundo from "../assets/img/login/campo-fundo.png";
 
 export const LoginPage = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Erro ao fazer login");
+        setLoading(false);
+        return;
+      }
+
+      // Armazenar token JWT
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", data.username);
+      localStorage.setItem("role", data.role);
+
+      // Redirecionar baseado no role
+      if (data.role === "ROLE_ADMIN") {
+        navigate("/admin");
+      } else if (data.role === "ROLE_USER") {
+        navigate("/user");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      setError("Erro de conexão com o servidor");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="body">
@@ -22,6 +74,7 @@ export const LoginPage = () => {
           </div>
 
           <div className="login-form">
+            {error && <div className="error-message">{error}</div>}
 
             {/* Campo E-mail */}
             <div className="email-field">
@@ -37,6 +90,9 @@ export const LoginPage = () => {
                   className="container-3"
                   placeholder="email@email.com"
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -55,10 +111,14 @@ export const LoginPage = () => {
                   className="container-3"
                   placeholder="••••••••"
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
                 />
                 <div
                   className="icon-right"
                   onClick={() => setShowPassword(!showPassword)}
+                  style={{ cursor: "pointer" }}
                 >
                   {showPassword ? (
                     <svg viewBox="0 0 24 24" fill="none" stroke="#717a6d" strokeWidth="2" width="16" height="16">
@@ -77,8 +137,8 @@ export const LoginPage = () => {
             </div>
 
             {/* Botão Entrar */}
-            <button className="CTA-button">
-              <span className="text">Entrar</span>
+            <button className="CTA-button" onClick={handleLogin} disabled={loading || !email || !password}>
+              <span className="text">{loading ? "Entrando..." : "Entrar"}</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" width="16" height="16">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12,5 19,12 12,19" />

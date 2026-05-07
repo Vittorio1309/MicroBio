@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import agroImage from "../assets/img/background-image-with-overlay.png";
 import saudeImage from "../assets/img/microbio-hero-1.png";
 import arrowIcon from "../assets/img/icon-2.svg";
-import icon from "../assets/img/icon.svg";
+import icon from "../assets/img/Icon.svg";
 import "../styles/choose.css";
 
 export const ChoosePage = () => {

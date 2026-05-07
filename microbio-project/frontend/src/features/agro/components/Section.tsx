@@ -9,8 +9,6 @@ import agronomistImage from "../../../assets/img/Professional Agronomist.png";
 import iconAnaliseGenetica from "../../../assets/img/Icon.png";
 import iconInsumosBiologicos from "../../../assets/img/Icon (1).png";
 import iconPhone from "../../../assets/img/Icon.svg";
-import iconEmail from "../../../assets/img/Icon.png";
-import iconAddress from "../../../assets/img/Icon (1).png";
 import overlay3 from "../../../assets/img/Overlay (3).png";
 import overlay4 from "../../../assets/img/Overlay (4).png";
 import overlay5 from "../../../assets/img/Overlay (5).png";
