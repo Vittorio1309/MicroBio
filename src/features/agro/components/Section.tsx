@@ -70,11 +70,23 @@ export const Section: React.FC = () => {
               agronegócio exige.
             </p>
             <div className="hero-actions">
-              <button className="hero-button hero-button-primary">
+              <button
+                className="hero-button hero-button-primary"
+                type="button"
+                onClick={() => {
+                  window.location.href = "/orcamento";
+                }}
+              >
                 Iniciar Análise de Solo
                 <img className="hero-button-icon" alt="" src={arrowIcon} />
               </button>
-              <button className="hero-button hero-button-secondary">
+              <button
+                className="hero-button hero-button-secondary"
+                type="button"
+                onClick={() => {
+                  window.location.href = "/login";
+                }}
+              >
                 Acessar Resultados
               </button>
             </div>
@@ -168,7 +180,13 @@ export const Section: React.FC = () => {
               </article>
             </div>
 
-            <button className="about-link">
+            <button
+              className="about-link"
+              type="button"
+              onClick={() => {
+                window.location.href = "/sobre";
+              }}
+            >
               Conheça nossa trajetória
               <img className="about-link-icon" alt="" src={iconAnalises} />
             </button>

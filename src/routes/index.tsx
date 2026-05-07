@@ -4,6 +4,7 @@ import { LoginPage } from "../features/auth";
 import { ChoosePage } from "../features/common";
 import { AgroPage } from "../features/agro";
 import Orcamento from "../features/agro/pages/Orcamento";
+import { AboutPage } from "../features/about";
 
 /**
  * AppRoutes Component
@@ -23,7 +24,7 @@ export const AppRoutes: React.FC = () => {
         {/* Feature Routes */}
         <Route path="/agro" element={<AgroPage />} />
         <Route path="/orcamento" element={<Orcamento />} />
-
+        <Route path="/sobre" element={<AboutPage />} />
 
         {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
