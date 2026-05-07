@@ -99,6 +99,17 @@ body.agro-route #root {
   color: #115234;
 }
 
+.button-login:focus,
+.button-login:active {
+  outline: none;
+}
+
+.button-login::-moz-focus-inner {
+  border: 0;
+}
+
+
+
 .button-orcamento {
   min-height: 30px;
   padding: 0 14px;
@@ -1133,4 +1144,98 @@ body.agro-route #root {
     width: 18px;
     height: 18px;
   }
+}
+
+/* ── Expansão 2024 ────────────────────────────────────── */
+
+.expansao-wrapper {
+  background: #f8f9fa;
+  padding: 3rem 3.5rem 4rem;
+}
+
+.expansao-card {
+  max-width: 1100px;
+  margin: 0 auto;
+  border: 2px solid #177245;
+  border-radius: 1.25rem;
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 3.5rem;
+  background: #ffffff;
+}
+
+.expansao-left {
+  flex: 1;
+}
+
+.expansao-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f0faf4;
+  color: #177245;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  border-radius: 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.expansao-titulo {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+  margin: 0 0 1.25rem 0;
+}
+
+.expansao-texto {
+  font-size: 0.875rem;
+  color: #475569;
+  line-height: 1.75;
+  margin: 0 0 2rem 0;
+  max-width: 420px;
+}
+
+.expansao-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.expansao-stat {
+  border: 1.5px solid #177245;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.expansao-stat-valor {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.expansao-stat-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.expansao-right {
+  flex: 0 0 380px;
+}
+
+.expansao-img {
+  width: 100%;
+  border-radius: 0.75rem;
+  display: block;
+  object-fit: cover;
 }
