@@ -6,6 +6,7 @@ import { ChoosePage } from "../pages/ChoosePage";
 import { AgroPage } from "../pages/AgroPage";
 import { AdminPage } from "../pages/AdminPage";
 import { UserPage } from "../pages/UserPage";
+export { AboutPage } from '../pages/AboutPage';
 
 export const AppRoutes = () => {
   return (

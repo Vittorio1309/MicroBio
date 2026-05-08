@@ -12,14 +12,13 @@ CREATE TABLE pessoa (
 -- =========================
 -- TABELA USUARIO
 -- =========================
+DROP TABLE IF EXISTS usuario CASCADE;
+
 CREATE TABLE usuario (
-    usuario_id SERIAL PRIMARY KEY,
-    email VARCHAR(150) UNIQUE NOT NULL
-        CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.com\\.br$'),
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(150) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
-    pessoa_id INTEGER UNIQUE,
-    CONSTRAINT fk_usuario_pessoa
-        FOREIGN KEY (pessoa_id) REFERENCES pessoa(pessoa_id)
+    role VARCHAR(50) NOT NULL
 );
 
 -- =========================
