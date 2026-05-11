@@ -1,0 +1,88 @@
+.analises-page {}
+
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.analises-divider {
+  border-top: 2px solid var(--border);
+  margin-bottom: 28px;
+}
+
+.analises-filters {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.filter-select {
+  padding: 10px 36px 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.15s;
+}
+
+.filter-select:focus { border-color: var(--green-main); outline: none; }
+
+.analises-empty {
+  text-align: center;
+  padding: 80px 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.analises-table-wrap {
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.analises-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.analises-table th {
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-main);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.analises-table td {
+  padding: 15px 20px;
+  font-size: 0.88rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.analises-table tbody tr:last-child td { border-bottom: none; }
+.analises-table tbody tr:hover { background: var(--bg-main); }
+
+.text-muted { color: var(--text-muted) !important; }
+
+@media (max-width: 640px) {
+  .analises-filters { gap: 8px; }
+  .filter-select { font-size: 0.8rem; padding: 8px 28px 8px 10px; }
+  .analises-table th:nth-child(1),
+  .analises-table td:nth-child(1) { display: none; }
+}
