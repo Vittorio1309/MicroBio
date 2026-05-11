@@ -1,8 +1,12 @@
-// filepath: src/app/App.tsx
 import React from "react";
 import { AppRoutes } from "../routes";
 import "../styles/global.css";
 
-export const App = () => {
+/**
+ * App Component
+ * Root component that wraps all routes and global styles
+ * Centralizes the application structure
+ */
+export const App: React.FC = () => {
   return <AppRoutes />;
 };

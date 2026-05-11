@@ -1,4 +1,3 @@
-// filepath: src/features/agro/index.ts
-export { Nav } from "./components/Nav";
-export { Section } from "./components/Section";
-export { BackgroundBorder } from "./components/BackgroundBorder";
+export { AgroPage } from "./pages/AgroPage";
+export { default as Orcamento } from "./pages/Orcamento";
+export * from "./components";

@@ -1,49 +1,114 @@
 // filepath: src/features/agro/components/Nav.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export const Nav = () => {
+const sectionIds = ["inicio", "servicos", "sobre", "contato"] as const;
+
+/**
+ * Nav Component
+ * Navigation bar with scroll detection for agro page
+ * Highlights active section based on viewport position
+ */
+export const Nav: React.FC = () => {
+  const navigate = useNavigate();
+  const [currentSection, setCurrentSection] = useState<string>("inicio");
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visibleEntry?.target?.id) {
+          setCurrentSection(visibleEntry.target.id);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-25% 0px -45% 0px",
+        threshold: [0.2, 0.35, 0.5, 0.7],
+      }
+    );
+
+    sectionIds.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
   return (
-    <div className="nav">
+    <nav className="nav">
       <div className="container">
-        <div className="text-wrapper">
-          <div className="text">MicroBio</div>
-        </div>
+        <div className="text-wrapper">MicroBio</div>
 
-        <div className="div">
-          <button className="link" onClick={() => scrollToSection("inicio")}>
-            <div className="text-2">Início</div>
+        <div className="nav-menu">
+          <button
+            className={`nav-link ${currentSection === "inicio" ? "is-active" : ""}`}
+            onClick={() => scrollToSection("inicio")}
+            type="button"
+            aria-label="Ir para Início"
+          >
+            Início
           </button>
 
-          <button className="nav-link" onClick={() => scrollToSection("servicos")}>
-            <div className="text-3">Serviços</div>
+          <button
+            className={`nav-link ${currentSection === "sobre" ? "is-active" : ""}`}
+            onClick={() => scrollToSection("sobre")}
+            type="button"
+            aria-label="Ir para Sobre"
+          >
+            Sobre
           </button>
 
-          <button className="nav-link" onClick={() => scrollToSection("sobre")}>
-            <div className="text-4">Sobre</div>
+          <button
+            className={`nav-link ${currentSection === "servicos" ? "is-active" : ""}`}
+            onClick={() => scrollToSection("servicos")}
+            type="button"
+            aria-label="Ir para Serviços"
+          >
+            Serviços
           </button>
 
-          <button className="nav-link" onClick={() => scrollToSection("contato")}>
-            <div className="text-5">Contato</div>
+          <button
+            className={`nav-link ${currentSection === "contato" ? "is-active" : ""}`}
+            onClick={() => scrollToSection("contato")}
+            type="button"
+            aria-label="Ir para Contato"
+          >
+            Contato
           </button>
         </div>
 
         <div className="nav-actions">
-          <button className="button-login">
-            <div className="text">Login</div>
+          <button
+            className="button-login"
+            onClick={() => navigate("/login")}
+            type="button"
+          >
+            Login
           </button>
-
-          <button className="button-orcamento">
-            <div className="div">Solicitar Orçamento</div>
-          </button>
+<button
+  className="button-orcamento"
+  type="button"
+  aria-label="Solicitar Orçamento"
+  onClick={() => navigate("/orcamento")} // Adicione esta linha
+>
+  Solicitar Orçamento
+</button>
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
