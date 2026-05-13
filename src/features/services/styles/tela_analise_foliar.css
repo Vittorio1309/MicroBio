@@ -1,0 +1,412 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Playfair+Display:wght@600;700&display=swap');
+
+.af-page {
+  --green-dark:   #1a3a1f;
+  --green-mid:    #2d5a35;
+  --green-accent: #3d7a47;
+  --green-light:  #5aaa68;
+  --green-pale:   #e8f3ea;
+  --white:        #ffffff;
+  --gray-100:     #f5f7f5;
+  --gray-200:     #e2e8e3;
+  --gray-400:     #9aaa9c;
+  --gray-600:     #5a6b5c;
+  --text-dark:    #1a2b1c;
+  --radius:       10px;
+  --font-body:    'DM Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
+
+  font-family: var(--font-body);
+  background: var(--white);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+.af-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 48px;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.af-navLogo {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--green-dark);
+  letter-spacing: -0.02em;
+}
+
+.af-navLinks {
+  display: flex;
+  gap: 32px;
+}
+
+.af-navLinks a {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-600);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.af-navLinks a.af-active {
+  color: var(--green-dark);
+  font-weight: 600;
+  border-bottom: 2px solid var(--green-accent);
+  padding-bottom: 2px;
+}
+
+.af-navLinks a:hover {
+  color: var(--green-dark);
+}
+
+.af-navLogin {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-600);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.af-navLogin:hover {
+  color: var(--green-dark);
+}
+
+.af-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 48px;
+  font-size: 0.8rem;
+  color: var(--gray-400);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.af-breadcrumb a {
+  color: var(--gray-400);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.af-breadcrumb a:hover {
+  color: var(--green-accent);
+}
+
+.af-breadcrumbActive {
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.af-hero {
+  padding: 48px 48px 36px;
+  max-width: 860px;
+}
+
+.af-heroIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--green-pale);
+  border-radius: 12px;
+  color: var(--green-accent);
+  margin-bottom: 16px;
+}
+
+.af-heroTitle {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.af-heroDesc {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  line-height: 1.7;
+  max-width: 720px;
+}
+
+.af-divider {
+  height: 1px;
+  background: var(--gray-200);
+  margin: 0 48px;
+}
+
+.af-section {
+  padding: 40px 48px;
+}
+
+.af-sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.af-analisesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.af-analiseItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--gray-200);
+  border-right: 1px solid var(--gray-200);
+}
+
+.af-analiseItem:nth-child(even) {
+  border-right: none;
+}
+
+.af-analiseItem:nth-last-child(-n+2) {
+  border-bottom: none;
+}
+
+.af-checkIcon {
+  color: var(--green-accent);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.af-etapasGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.af-etapaCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.af-etapaNum {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--green-accent);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.af-etapaTitulo {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.af-etapaDesc {
+  font-size: 0.8rem;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+.af-forneceList {
+  display: flex;
+  flex-direction: column;
+  max-width: 520px;
+  margin: 0 auto;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.af-forneceItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.af-forneceItem:last-child {
+  border-bottom: none;
+}
+
+.af-forneceIcon {
+  color: var(--green-accent);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.af-cta {
+  margin: 0 48px;
+  background: var(--green-mid);
+  border-radius: 16px;
+  padding: 40px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.af-ctaContent {
+  flex: 1;
+}
+
+.af-ctaTitle {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--white);
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.af-ctaDesc {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.af-ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--white);
+  color: var(--green-dark);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 14px 24px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.af-ctaBtn:hover {
+  background: var(--green-pale);
+  transform: translateY(-1px);
+}
+
+.af-faqList {
+  display: flex;
+  flex-direction: column;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.af-faqItem {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.af-faqItem:last-child {
+  border-bottom: none;
+}
+
+.af-faqPergunta {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.af-faqResposta {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+.af-footer {
+  margin-top: auto;
+  background: var(--green-dark);
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.af-footerLogo {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--white);
+}
+
+.af-footerLinks {
+  display: flex;
+  gap: 24px;
+}
+
+.af-footerLinks a {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.af-footerLinks a:hover {
+  color: var(--white);
+}
+
+.af-footerSocials {
+  display: flex;
+  gap: 12px;
+}
+
+.af-footerSocials a {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.af-footerSocials a:hover {
+  border-color: var(--green-light);
+  color: var(--white);
+}
+
+@media (max-width: 768px) {
+  .af-nav { padding: 14px 20px; }
+  .af-navLinks { display: none; }
+  .af-breadcrumb { padding: 10px 20px; }
+  .af-hero { padding: 32px 20px 24px; }
+  .af-heroTitle { font-size: 1.5rem; }
+  .af-divider { margin: 0 20px; }
+  .af-section { padding: 32px 20px; }
+  .af-analisesGrid { grid-template-columns: 1fr; }
+  .af-analiseItem { border-right: none; }
+  .af-analiseItem:nth-last-child(-n+2) { border-bottom: 1px solid var(--gray-200); }
+  .af-analiseItem:last-child { border-bottom: none; }
+  .af-etapasGrid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .af-cta { margin: 0 20px; flex-direction: column; padding: 32px 24px; text-align: center; }
+  .af-footer { flex-direction: column; gap: 20px; padding: 28px 20px; text-align: center; }
+  .af-footerLinks { flex-wrap: wrap; justify-content: center; }
+}
