@@ -1,0 +1,412 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Playfair+Display:wght@600;700&display=swap');
+
+.vb-page {
+  --green-dark:   #1a3a1f;
+  --green-mid:    #2d5a35;
+  --green-accent: #3d7a47;
+  --green-light:  #5aaa68;
+  --green-pale:   #e8f3ea;
+  --white:        #ffffff;
+  --gray-100:     #f5f7f5;
+  --gray-200:     #e2e8e3;
+  --gray-400:     #9aaa9c;
+  --gray-600:     #5a6b5c;
+  --text-dark:    #1a2b1c;
+  --radius:       10px;
+  --font-body:    'DM Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
+
+  font-family: var(--font-body);
+  background: var(--white);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+.vb-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 48px;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.vb-navLogo {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--green-dark);
+  letter-spacing: -0.02em;
+}
+
+.vb-navLinks {
+  display: flex;
+  gap: 32px;
+}
+
+.vb-navLinks a {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-600);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.vb-navLinks a.vb-active {
+  color: var(--green-dark);
+  font-weight: 600;
+  border-bottom: 2px solid var(--green-accent);
+  padding-bottom: 2px;
+}
+
+.vb-navLinks a:hover {
+  color: var(--green-dark);
+}
+
+.vb-navLogin {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-600);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.vb-navLogin:hover {
+  color: var(--green-dark);
+}
+
+.vb-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 48px;
+  font-size: 0.8rem;
+  color: var(--gray-400);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.vb-breadcrumb a {
+  color: var(--gray-400);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.vb-breadcrumb a:hover {
+  color: var(--green-accent);
+}
+
+.vb-breadcrumbActive {
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.vb-hero {
+  padding: 48px 48px 36px;
+  max-width: 860px;
+}
+
+.vb-heroIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--green-pale);
+  border-radius: 12px;
+  color: var(--green-accent);
+  margin-bottom: 16px;
+}
+
+.vb-heroTitle {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.vb-heroDesc {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  line-height: 1.7;
+  max-width: 720px;
+}
+
+.vb-divider {
+  height: 1px;
+  background: var(--gray-200);
+  margin: 0 48px;
+}
+
+.vb-section {
+  padding: 40px 48px;
+}
+
+.vb-sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.vb-analisesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.vb-analiseItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--gray-200);
+  border-right: 1px solid var(--gray-200);
+}
+
+.vb-analiseItem:nth-child(even) {
+  border-right: none;
+}
+
+.vb-analiseItem:nth-last-child(-n+2) {
+  border-bottom: none;
+}
+
+.vb-checkIcon {
+  color: var(--green-accent);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.vb-etapasGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.vb-etapaCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.vb-etapaNum {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--green-accent);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vb-etapaTitulo {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.vb-etapaDesc {
+  font-size: 0.8rem;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+.vb-forneceList {
+  display: flex;
+  flex-direction: column;
+  max-width: 520px;
+  margin: 0 auto;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.vb-forneceItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.vb-forneceItem:last-child {
+  border-bottom: none;
+}
+
+.vb-forneceIcon {
+  color: var(--green-accent);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.vb-cta {
+  margin: 0 48px;
+  background: var(--green-mid);
+  border-radius: 16px;
+  padding: 40px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.vb-ctaContent {
+  flex: 1;
+}
+
+.vb-ctaTitle {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--white);
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.vb-ctaDesc {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.vb-ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--white);
+  color: var(--green-dark);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 14px 24px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.vb-ctaBtn:hover {
+  background: var(--green-pale);
+  transform: translateY(-1px);
+}
+
+.vb-faqList {
+  display: flex;
+  flex-direction: column;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.vb-faqItem {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.vb-faqItem:last-child {
+  border-bottom: none;
+}
+
+.vb-faqPergunta {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.vb-faqResposta {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+.vb-footer {
+  margin-top: auto;
+  background: var(--green-dark);
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vb-footerLogo {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--white);
+}
+
+.vb-footerLinks {
+  display: flex;
+  gap: 24px;
+}
+
+.vb-footerLinks a {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.vb-footerLinks a:hover {
+  color: var(--white);
+}
+
+.vb-footerSocials {
+  display: flex;
+  gap: 12px;
+}
+
+.vb-footerSocials a {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.vb-footerSocials a:hover {
+  border-color: var(--green-light);
+  color: var(--white);
+}
+
+@media (max-width: 768px) {
+  .vb-nav { padding: 14px 20px; }
+  .vb-navLinks { display: none; }
+  .vb-breadcrumb { padding: 10px 20px; }
+  .vb-hero { padding: 32px 20px 24px; }
+  .vb-heroTitle { font-size: 1.5rem; }
+  .vb-divider { margin: 0 20px; }
+  .vb-section { padding: 32px 20px; }
+  .vb-analisesGrid { grid-template-columns: 1fr; }
+  .vb-analiseItem { border-right: none; }
+  .vb-analiseItem:nth-last-child(-n+2) { border-bottom: 1px solid var(--gray-200); }
+  .vb-analiseItem:last-child { border-bottom: none; }
+  .vb-etapasGrid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .vb-cta { margin: 0 20px; flex-direction: column; padding: 32px 24px; text-align: center; }
+  .vb-footer { flex-direction: column; gap: 20px; padding: 28px 20px; text-align: center; }
+  .vb-footerLinks { flex-wrap: wrap; justify-content: center; }
+}
