@@ -1,25 +1,60 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm: React.FC = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (data.success && data.token) {
+        localStorage.setItem("microbio_token", data.token);
+        localStorage.setItem("microbio_role", data.role ?? "");
+        navigate(data.role === "ROLE_ADMIN" ? "/admin" : "/agro");
+      } else {
+        setError(data.message || "Usuário ou senha incorretos");
+      }
+    } catch {
+      setError("Erro ao conectar com o servidor");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="login-form">
-      {/* Campo E-mail */}
+    <form className="login-form" onSubmit={handleSubmit}>
+      {/* Campo Usuário */}
       <div className="email-field">
-        <label htmlFor="email" className="label-e-mail">E-MAIL</label>
+        <label htmlFor="username" className="label-e-mail">USUÁRIO</label>
         <div className="input-wrapper">
           <div className="icon-left">
             <svg viewBox="0 0 24 24" fill="none" stroke="#717a6d" strokeWidth="2" width="16" height="16">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-              <polyline points="22,6 12,13 2,6" />
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
             </svg>
           </div>
           <input
-            id="email"
+            id="username"
             className="input-field"
-            placeholder="email@email.com"
-            type="email"
+            placeholder="Digite seu usuário"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            autoComplete="username"
           />
         </div>
       </div>
@@ -39,6 +74,10 @@ export const LoginForm: React.FC = () => {
             className="input-field"
             placeholder="••••••••"
             type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
           />
           <button
             type="button"
@@ -62,13 +101,21 @@ export const LoginForm: React.FC = () => {
         </div>
       </div>
 
+      {error && (
+        <p style={{ color: "#c0392b", fontSize: "0.8rem", margin: "0 0 8px", textAlign: "center" }}>
+          {error}
+        </p>
+      )}
+
       {/* Botão Entrar */}
-      <button className="cta-button" type="submit">
-        <span className="btn-text">Entrar</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" width="16" height="16">
-          <line x1="5" y1="12" x2="19" y2="12" />
-          <polyline points="12,5 19,12 12,19" />
-        </svg>
+      <button className="cta-button" type="submit" disabled={loading}>
+        <span className="btn-text">{loading ? "Entrando..." : "Entrar"}</span>
+        {!loading && (
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" width="16" height="16">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12,5 19,12 12,19" />
+          </svg>
+        )}
       </button>
 
       {/* Esqueceu a senha */}
@@ -88,6 +135,6 @@ export const LoginForm: React.FC = () => {
           </svg>
         </a>
       </div>
-    </div>
+    </form>
   );
 };

@@ -53,7 +53,11 @@ function Sidebar({ currentPage, navigate }) {
           </button>
         ))}
       </nav>
-      <button className="sidebar-logout" onClick={() => navigate("dashboard")}>Sair</button>
+      <button className="sidebar-logout" onClick={() => {
+        localStorage.removeItem("microbio_token");
+        localStorage.removeItem("microbio_role");
+        window.location.href = "/login";
+      }}>Sair</button>
     </aside>
   );
 }
