@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../styles/orcamento.module.css";
 import fundoImg from "../../../assets/img/orcamento/Imagem_fundo_tela_orcamento_Micro_Bio.jpeg";
 import { Footer } from "../components";
@@ -16,6 +17,7 @@ interface Servico {
 }
 
 export default function QuoteForm() {
+  const goToAgro = useNavigate();
   const [step, setStep] = useState(1);
   const totalSteps = 2;
 
@@ -177,7 +179,7 @@ export default function QuoteForm() {
     return (
       <div className={styles.page}>
         <nav className={styles.nav}>
-          <span className={styles.navLogo}>MicroBio</span>
+          <span className={styles.navLogo} onClick={() => goToAgro("/agro")} style={{ cursor: "pointer" }}>MicroBio</span>
         </nav>
         <div className={styles.hero}>
           <div className={styles.heroBg} style={{ backgroundImage: `url(${fundoImg})` }} />

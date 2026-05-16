@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import agroImage from "../../../assets/img/background-image-with-overlay.png";
 import saudeImage from "../../../assets/img/microbio-hero-1.png";
 import arrowIcon from "../../../assets/img/icon-2.svg";
@@ -6,6 +7,7 @@ import icon from "../../../assets/img/Icon.svg";
 import "../styles/choose.css";
 
 export const ChoosePage: React.FC = () => {
+  const navigate = useNavigate();
   const [hovered, setHovered] = useState<"agro" | "saude" | null>(null);
 
   const agroUrl = "/agro";
@@ -14,7 +16,7 @@ export const ChoosePage: React.FC = () => {
   return (
     <div className={`choose-container ${hovered ? `hovering-${hovered}` : ""}`}>
       {/* Logo superior central */}
-      <div className="top-logo">MicroBio</div>
+      <div className="top-logo" onClick={() => navigate("/agro")} style={{ cursor: "pointer" }}>MicroBio</div>
 
       {/* Seletor central com pulso */}
       <div className={`center-selector ${hovered ? "selector-hidden" : ""}`}>

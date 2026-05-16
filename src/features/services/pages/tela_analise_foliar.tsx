@@ -55,7 +55,7 @@ export default function AnaliseFoliar() {
     <div className="af-page">
       {/* NAV */}
       <nav className="af-nav">
-        <span className="af-navLogo">MicroBio</span>
+        <a href="/agro" className="af-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="af-navLinks">
           <a href="#">Início</a>
           <a href="#" className="af-active">Serviços</a>
@@ -174,7 +174,7 @@ export default function AnaliseFoliar() {
 
       {/* FOOTER */}
       <footer className="af-footer">
-        <span className="af-footerLogo">MicroBio</span>
+        <a href="/agro" className="af-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="af-footerLinks">
           <a href="#">Início</a>
           <a href="#">Serviços</a>

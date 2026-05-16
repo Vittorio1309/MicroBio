@@ -57,7 +57,7 @@ export default function AnaliseSolo() {
     <div className="as-page">
       {/* NAV */}
       <nav className="as-nav">
-        <span className="as-navLogo">MicroBio</span>
+        <a href="/agro" className="as-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="as-navLinks">
           <a href="#">Início</a>
           <a href="#" className="as-active">Serviços</a>
@@ -176,7 +176,7 @@ export default function AnaliseSolo() {
 
       {/* FOOTER */}
       <footer className="as-footer">
-        <span className="as-footerLogo">MicroBio</span>
+        <a href="/agro" className="as-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="as-footerLinks">
           <a href="#">Início</a>
           <a href="#">Serviços</a>

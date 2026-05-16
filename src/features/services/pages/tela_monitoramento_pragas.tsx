@@ -55,7 +55,7 @@ export default function MonitoramentoPragas() {
     <div className="mp-page">
       {/* NAV */}
       <nav className="mp-nav">
-        <span className="mp-navLogo">MicroBio</span>
+        <a href="/agro" className="mp-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="mp-navLinks">
           <a href="#">Início</a>
           <a href="#" className="mp-active">Serviços</a>
@@ -175,7 +175,7 @@ export default function MonitoramentoPragas() {
 
       {/* FOOTER */}
       <footer className="mp-footer">
-        <span className="mp-footerLogo">MicroBio</span>
+        <a href="/agro" className="mp-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="mp-footerLinks">
           <a href="#">Início</a>
           <a href="#">Serviços</a>

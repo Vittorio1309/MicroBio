@@ -51,7 +51,13 @@ export const Nav: React.FC = () => {
   return (
     <nav className="nav">
       <div className="container">
-        <div className="text-wrapper">MicroBio</div>
+        <div
+          className="text-wrapper"
+          onClick={() => navigate("/agro")}
+          style={{ cursor: "pointer" }}
+        >
+          MicroBio
+        </div>
 
         <div className="nav-menu">
           <button

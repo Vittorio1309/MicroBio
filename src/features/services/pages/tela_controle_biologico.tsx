@@ -55,7 +55,7 @@ export default function ControleBiologico() {
     <div className="cb-page">
       {/* NAV */}
       <nav className="cb-nav">
-        <span className="cb-navLogo">MicroBio</span>
+        <a href="/agro" className="cb-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="cb-navLinks">
           <a href="#">Início</a>
           <a href="#" className="cb-active">Serviços</a>
@@ -175,7 +175,7 @@ export default function ControleBiologico() {
 
       {/* FOOTER */}
       <footer className="cb-footer">
-        <span className="cb-footerLogo">MicroBio</span>
+        <a href="/agro" className="cb-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="cb-footerLinks">
           <a href="#">Início</a>
           <a href="#">Serviços</a>

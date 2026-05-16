@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 /**
  * Footer Component
@@ -9,7 +10,7 @@ export const Footer: React.FC = () => {
     <footer className="agro-footer">
       <div className="footer-container">
         <div className="footer-brand">
-          <span className="footer-logo">MicroBio</span>
+          <Link to="/agro" className="footer-logo" style={{ textDecoration: "none" }}>MicroBio</Link>
         </div>
 
 <nav className="footer-nav">

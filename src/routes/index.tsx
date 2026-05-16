@@ -14,12 +14,6 @@ import MonitoramentoPragas from "../features/services/pages/tela_monitoramento_p
 import NossosServicos from "../features/services/pages/tela_nossos_servicos";
 import AdminPanel from "../features/admin/pages/AdminPanel";
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem("microbio_token");
-  if (!token) return <Navigate to="/login" replace />;
-  return <>{children}</>;
-}
-
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem("microbio_token");
   const role = localStorage.getItem("microbio_role");
@@ -47,11 +41,14 @@ export const AppRoutes: React.FC = () => {
         <Route path="/monitoramento-pragas" element={<MonitoramentoPragas />} />
         <Route path="/orcamento" element={<Orcamento />} />
 
-        {/* Authenticated Routes */}
-        <Route path="/agro" element={<ProtectedRoute><AgroPage /></ProtectedRoute>} />
+        {/* Agro Platform (public) */}
+        <Route path="/agro" element={<AgroPage />} />
 
         {/* Admin-only Routes */}
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+
+        {/* Placeholder — telas de usuários a desenvolver */}
+        <Route path="/usuarios" element={<Navigate to="/admin" replace />} />
 
         {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />

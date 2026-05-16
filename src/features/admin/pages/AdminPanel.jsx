@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Dashboard from "./Dashboard";
-import Clientes from "./Clientes";
+import Usuarios from "./Usuarios";
 import Analises from "./Analises";
 import CadastrarAnalise from "./CadastrarAnalise";
 import "../styles/admin.css";
@@ -16,7 +17,7 @@ export default function AdminPanel() {
         <Sidebar currentPage={page} navigate={navigate} />
         <main className="app-main">
           {page === "dashboard" && <Dashboard navigate={navigate} />}
-          {page === "clientes" && <Clientes />}
+          {page === "usuarios" && <Usuarios />}
           {page === "analises" && <Analises navigate={navigate} />}
           {page === "cadastrar-analise" && <CadastrarAnalise navigate={navigate} />}
           {page === "arquivos" && <Placeholder title="Arquivos" />}
@@ -29,9 +30,11 @@ export default function AdminPanel() {
 }
 
 function Sidebar({ currentPage, navigate }) {
+  const goToAgro = useNavigate();
+
   const items = [
     { id: "dashboard", label: "Dashboard", icon: "⊞" },
-    { id: "clientes", label: "Clientes", icon: null },
+    { id: "usuarios", label: "Usuários", icon: null },
     { id: "analises", label: "Análises", icon: "📄" },
     { id: "arquivos", label: "Arquivos", icon: "📄" },
     { id: "tipos-exame", label: "Tipos de exame", icon: "📄" },
@@ -40,7 +43,14 @@ function Sidebar({ currentPage, navigate }) {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">MicroBio</div>
+      <div
+        className="sidebar-logo"
+        onClick={() => goToAgro("/agro")}
+        style={{ cursor: "pointer" }}
+        title="Ir para a página inicial"
+      >
+        MicroBio
+      </div>
       <nav className="sidebar-nav">
         {items.map((item) => (
           <button

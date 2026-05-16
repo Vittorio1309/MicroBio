@@ -80,7 +80,7 @@ export default function NossosServicos() {
     <div className="ns-page">
       {/* NAV */}
       <nav className="ns-nav">
-        <span className="ns-navLogo">MicroBio</span>
+        <a href="/agro" className="ns-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="ns-navLinks">
           <a href="#">Início</a>
           <a href="#" className="ns-active">Serviços</a>
@@ -144,7 +144,7 @@ export default function NossosServicos() {
 
       {/* FOOTER */}
       <footer className="ns-footer">
-        <span className="ns-footerLogo">MicroBio</span>
+        <a href="/agro" className="ns-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="ns-footerLinks">
           <a href="#">Início</a>
           <a href="#">Serviços</a>

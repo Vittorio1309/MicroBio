@@ -55,7 +55,7 @@ export default function ValidacaoBioinsumos() {
     <div className="vb-page">
       {/* NAV */}
       <nav className="vb-nav">
-        <span className="vb-navLogo">MicroBio</span>
+        <a href="/agro" className="vb-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="vb-navLinks">
           <a href="#">Início</a>
           <a href="#" className="vb-active">Serviços</a>
@@ -173,7 +173,7 @@ export default function ValidacaoBioinsumos() {
 
       {/* FOOTER */}
       <footer className="vb-footer">
-        <span className="vb-footerLogo">MicroBio</span>
+        <a href="/agro" className="vb-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="vb-footerLinks">
           <a href="#">Início</a>
           <a href="#">Serviços</a>

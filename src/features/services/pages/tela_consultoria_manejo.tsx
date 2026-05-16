@@ -55,7 +55,7 @@ export default function ConsultoriaManejo() {
     <div className="cm-page">
       {/* NAV */}
       <nav className="cm-nav">
-        <span className="cm-navLogo">MicroBio</span>
+        <a href="/agro" className="cm-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="cm-navLinks">
           <a href="#">Início</a>
           <a href="#" className="cm-active">Serviços</a>
@@ -175,7 +175,7 @@ export default function ConsultoriaManejo() {
 
       {/* FOOTER */}
       <footer className="cm-footer">
-        <span className="cm-footerLogo">MicroBio</span>
+        <a href="/agro" className="cm-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
         <div className="cm-footerLinks">
           <a href="#">Início</a>
           <a href="#">Serviços</a>
