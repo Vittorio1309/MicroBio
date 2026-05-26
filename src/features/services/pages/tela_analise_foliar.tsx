@@ -1,4 +1,6 @@
 import "../styles/tela_analise_foliar.css";
+import { Footer } from "../../agro/components";
+import { NavAbout } from "../../about/components/NavAbout";
 
 const ANALISES = [
   "Macronutrientes foliares (N, P, K, Ca, Mg, S)",
@@ -52,18 +54,8 @@ const FAQ = [
 
 export default function AnaliseFoliar() {
   return (
-    <div className="af-page">
-      {/* NAV */}
-      <nav className="af-nav">
-        <a href="/agro" className="af-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="af-navLinks">
-          <a href="#">Início</a>
-          <a href="#" className="af-active">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Contato</a>
-        </div>
-        <a href="#" className="af-navLogin">Login</a>
-      </nav>
+    <div className="af-page">      <NavAbout />
+
 
       {/* BREADCRUMB */}
       <div className="af-breadcrumb">
@@ -151,7 +143,7 @@ export default function AnaliseFoliar() {
           </h2>
           <p className="af-ctaDesc">Entre em contato e receba uma proposta personalizada.</p>
         </div>
-        <a href="#" className="af-ctaBtn">
+        <a href="/orcamento" className="af-ctaBtn">
           Solicitar Orçamento
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M5 12h14M13 6l6 6-6 6" />
@@ -170,22 +162,7 @@ export default function AnaliseFoliar() {
             </div>
           ))}
         </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="af-footer">
-        <a href="/agro" className="af-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="af-footerLinks">
-          <a href="#">Início</a>
-          <a href="#">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Laboratório</a>
-        </div>
-        <div className="af-footerSocials">
-          <a href="#" aria-label="Instagram">IG</a>
-          <a href="#" aria-label="LinkedIn">in</a>
-        </div>
-      </footer>
+      </section>      <Footer />
     </div>
   );
 }

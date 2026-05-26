@@ -1,4 +1,6 @@
 import "../styles/tela_consultoria_manejo.css";
+import { Footer } from "../../agro/components";
+import { NavAbout } from "../../about/components/NavAbout";
 
 const ANALISES = [
   "Interpretação integrada de análises de solo e foliar",
@@ -52,18 +54,8 @@ const FAQ = [
 
 export default function ConsultoriaManejo() {
   return (
-    <div className="cm-page">
-      {/* NAV */}
-      <nav className="cm-nav">
-        <a href="/agro" className="cm-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="cm-navLinks">
-          <a href="#">Início</a>
-          <a href="#" className="cm-active">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Contato</a>
-        </div>
-        <a href="#" className="cm-navLogin">Login</a>
-      </nav>
+    <div className="cm-page">      <NavAbout />
+
 
       {/* BREADCRUMB */}
       <div className="cm-breadcrumb">
@@ -152,7 +144,7 @@ export default function ConsultoriaManejo() {
           </h2>
           <p className="cm-ctaDesc">Entre em contato e receba uma proposta personalizada.</p>
         </div>
-        <a href="#" className="cm-ctaBtn">
+        <a href="/orcamento" className="cm-ctaBtn">
           Solicitar Orçamento
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M5 12h14M13 6l6 6-6 6" />
@@ -171,22 +163,7 @@ export default function ConsultoriaManejo() {
             </div>
           ))}
         </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="cm-footer">
-        <a href="/agro" className="cm-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="cm-footerLinks">
-          <a href="#">Início</a>
-          <a href="#">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Laboratório</a>
-        </div>
-        <div className="cm-footerSocials">
-          <a href="#" aria-label="Instagram">IG</a>
-          <a href="#" aria-label="LinkedIn">in</a>
-        </div>
-      </footer>
+      </section>      <Footer />
     </div>
   );
 }

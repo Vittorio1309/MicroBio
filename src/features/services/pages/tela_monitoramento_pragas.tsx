@@ -1,4 +1,6 @@
 import "../styles/tela_monitoramento_pragas.css";
+import { Footer } from "../../agro/components";
+import { NavAbout } from "../../about/components/NavAbout";
 
 const ANALISES = [
   "Extração e quantificação de nematóides do solo",
@@ -52,18 +54,8 @@ const FAQ = [
 
 export default function MonitoramentoPragas() {
   return (
-    <div className="mp-page">
-      {/* NAV */}
-      <nav className="mp-nav">
-        <a href="/agro" className="mp-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="mp-navLinks">
-          <a href="#">Início</a>
-          <a href="#" className="mp-active">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Contato</a>
-        </div>
-        <a href="#" className="mp-navLogin">Login</a>
-      </nav>
+    <div className="mp-page">      <NavAbout />
+
 
       {/* BREADCRUMB */}
       <div className="mp-breadcrumb">
@@ -152,7 +144,7 @@ export default function MonitoramentoPragas() {
           </h2>
           <p className="mp-ctaDesc">Entre em contato e receba uma proposta personalizada.</p>
         </div>
-        <a href="#" className="mp-ctaBtn">
+        <a href="/orcamento" className="mp-ctaBtn">
           Solicitar Orçamento
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M5 12h14M13 6l6 6-6 6" />
@@ -171,22 +163,7 @@ export default function MonitoramentoPragas() {
             </div>
           ))}
         </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="mp-footer">
-        <a href="/agro" className="mp-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="mp-footerLinks">
-          <a href="#">Início</a>
-          <a href="#">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Laboratório</a>
-        </div>
-        <div className="mp-footerSocials">
-          <a href="#" aria-label="Instagram">IG</a>
-          <a href="#" aria-label="LinkedIn">in</a>
-        </div>
-      </footer>
+      </section>      <Footer />
     </div>
   );
 }
