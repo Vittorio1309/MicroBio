@@ -1,5 +1,6 @@
 // filepath: src/features/agro/components/Section.tsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import heroImage from "../../../assets/img/planta-o-moderna-vista-aerea.png";
 import arrowIcon from "../../../assets/img/icon-2.svg";
 import iconAnalises from "../../../assets/img/svg-1.png";
@@ -51,6 +52,8 @@ const newsItems = [
  * Displays hero, features, and news
  */
 export const Section: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <>
       <section className="hero-section" id="inicio">
@@ -205,7 +208,13 @@ export const Section: React.FC = () => {
               </p>
             </div>
 
-            <button className="services-button">Ver todos os serviços</button>
+                        <button
+              className="services-button"
+              type="button"
+              onClick={() => navigate("/servicos")}
+            >
+              Ver todos os serviços
+            </button>
           </div>
 
           <div className="services-grid">

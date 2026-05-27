@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "../styles/tela_nossos_servicos.css";
+import { Footer } from "../../agro/components";
+import { NavAbout } from "../../about/components/NavAbout";
 
 const SERVICOS = [
   {
@@ -77,21 +79,8 @@ export default function NossosServicos() {
   const navigate = useNavigate();
 
   return (
-    <div className="ns-page">
-      {/* NAV */}
-      <nav className="ns-nav">
-        <a href="/agro" className="ns-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="ns-navLinks">
-          <a href="#">Início</a>
-          <a href="#" className="ns-active">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Contato</a>
-        </div>
-        <div className="ns-navActions">
-          <a href="#" className="ns-navLogin">Login</a>
-          <a href="#" className="ns-navCta">Solicitar Orçamento</a>
-        </div>
-      </nav>
+    <div className="ns-page">      <NavAbout />
+
 
       {/* HERO */}
       <section className="ns-hero">
@@ -139,23 +128,8 @@ export default function NossosServicos() {
             Nossos especialistas estão prontos para criar um plano personalizado para sua propriedade.
           </p>
         </div>
-        <a href="#" className="ns-ctaBtn">Fale com um Especialista</a>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="ns-footer">
-        <a href="/agro" className="ns-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="ns-footerLinks">
-          <a href="#">Início</a>
-          <a href="#">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Laboratório</a>
-        </div>
-        <div className="ns-footerSocials">
-          <a href="#" aria-label="Instagram">IG</a>
-          <a href="#" aria-label="LinkedIn">in</a>
-        </div>
-      </footer>
+        <a href="/agro#contato" className="ns-ctaBtn">Fale com um Especialista</a>
+      </section>      <Footer />
     </div>
   );
 }

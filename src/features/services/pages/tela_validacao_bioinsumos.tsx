@@ -1,4 +1,6 @@
 import "../styles/tela_validacao_bioinsumos.css";
+import { Footer } from "../../agro/components";
+import { NavAbout } from "../../about/components/NavAbout";
 
 const ANALISES = [
   "Contagem de microrganismos viáveis (UFC/ml ou UFC/g)",
@@ -52,18 +54,8 @@ const FAQ = [
 
 export default function ValidacaoBioinsumos() {
   return (
-    <div className="vb-page">
-      {/* NAV */}
-      <nav className="vb-nav">
-        <a href="/agro" className="vb-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="vb-navLinks">
-          <a href="#">Início</a>
-          <a href="#" className="vb-active">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Contato</a>
-        </div>
-        <a href="#" className="vb-navLogin">Login</a>
-      </nav>
+    <div className="vb-page">      <NavAbout />
+
 
       {/* BREADCRUMB */}
       <div className="vb-breadcrumb">
@@ -150,7 +142,7 @@ export default function ValidacaoBioinsumos() {
           </h2>
           <p className="vb-ctaDesc">Entre em contato e receba uma proposta personalizada.</p>
         </div>
-        <a href="#" className="vb-ctaBtn">
+        <a href="/orcamento" className="vb-ctaBtn">
           Solicitar Orçamento
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M5 12h14M13 6l6 6-6 6" />
@@ -169,22 +161,7 @@ export default function ValidacaoBioinsumos() {
             </div>
           ))}
         </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="vb-footer">
-        <a href="/agro" className="vb-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="vb-footerLinks">
-          <a href="#">Início</a>
-          <a href="#">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Laboratório</a>
-        </div>
-        <div className="vb-footerSocials">
-          <a href="#" aria-label="Instagram">IG</a>
-          <a href="#" aria-label="LinkedIn">in</a>
-        </div>
-      </footer>
+      </section>      <Footer />
     </div>
   );
 }

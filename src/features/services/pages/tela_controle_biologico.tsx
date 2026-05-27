@@ -1,4 +1,6 @@
 import "../styles/tela_controle_biologico.css";
+import { Footer } from "../../agro/components";
+import { NavAbout } from "../../about/components/NavAbout";
 
 const ANALISES = [
   "Contagem de microrganismos viáveis (UFC ou esporos)",
@@ -52,18 +54,8 @@ const FAQ = [
 
 export default function ControleBiologico() {
   return (
-    <div className="cb-page">
-      {/* NAV */}
-      <nav className="cb-nav">
-        <a href="/agro" className="cb-navLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="cb-navLinks">
-          <a href="#">Início</a>
-          <a href="#" className="cb-active">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Contato</a>
-        </div>
-        <a href="#" className="cb-navLogin">Login</a>
-      </nav>
+    <div className="cb-page">      <NavAbout />
+
 
       {/* BREADCRUMB */}
       <div className="cb-breadcrumb">
@@ -152,7 +144,7 @@ export default function ControleBiologico() {
           </h2>
           <p className="cb-ctaDesc">Entre em contato e receba uma proposta personalizada.</p>
         </div>
-        <a href="#" className="cb-ctaBtn">
+        <a href="/orcamento" className="cb-ctaBtn">
           Solicitar Orçamento
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M5 12h14M13 6l6 6-6 6" />
@@ -171,22 +163,7 @@ export default function ControleBiologico() {
             </div>
           ))}
         </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="cb-footer">
-        <a href="/agro" className="cb-footerLogo" style={{ textDecoration: "none" }}>MicroBio</a>
-        <div className="cb-footerLinks">
-          <a href="#">Início</a>
-          <a href="#">Serviços</a>
-          <a href="#">Sobre</a>
-          <a href="#">Laboratório</a>
-        </div>
-        <div className="cb-footerSocials">
-          <a href="#" aria-label="Instagram">IG</a>
-          <a href="#" aria-label="LinkedIn">in</a>
-        </div>
-      </footer>
+      </section>      <Footer />
     </div>
   );
 }
