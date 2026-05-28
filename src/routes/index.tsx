@@ -13,6 +13,7 @@ import ValidacaoBioinsumos from "../features/services/pages/tela_validacao_bioin
 import MonitoramentoPragas from "../features/services/pages/tela_monitoramento_pragas";
 import NossosServicos from "../features/services/pages/tela_nossos_servicos";
 import AdminPanel from "../features/admin/pages/AdminPanel";
+import ClientePanel from "../features/cliente/pages/ClientePanel";
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem("microbio_token");
@@ -43,6 +44,9 @@ export const AppRoutes: React.FC = () => {
 
         {/* Agro Platform (public) */}
         <Route path="/agro" element={<AgroPage />} />
+
+        {/* Client Portal */}
+        <Route path="/cliente" element={<ClientePanel />} />
 
         {/* Admin-only Routes */}
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
