@@ -23,7 +23,7 @@ export const LoginForm: React.FC = () => {
       if (data.success && data.token) {
         localStorage.setItem("microbio_token", data.token);
         localStorage.setItem("microbio_role", data.role ?? "");
-        navigate(data.role === "ROLE_ADMIN" ? "/admin" : "/agro");
+        navigate(data.role === "ROLE_ADMIN" ? "/admin" : "/cliente");
       } else {
         setError(data.message || "Usuário ou senha incorretos");
       }
