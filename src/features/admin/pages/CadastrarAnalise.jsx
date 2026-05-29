@@ -1,116 +1,150 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/CadastrarAnalise.css";
 
-const clientes = ["João Silva", "Ana Souza", "Carlos Lima", "Fernanda Melo"];
-const tipos    = ["Água", "Solo", "Alimentos", "Ar", "Biológico"];
+function getAuthHeader() {
+  const token = localStorage.getItem("microbio_token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function fetchJson(url, options) {
+  const r = await fetch(url, options);
+  if (!r.ok) {
+    const body = await r.json().catch(() => ({}));
+    throw new Error(body.message || `Erro ${r.status}`);
+  }
+  return r.json();
+}
 
 export default function CadastrarAnalise({ navigate }) {
+  const [usuarios,  setUsuarios]  = useState([]);
+  const [loadError, setLoadError] = useState("");
   const [form, setForm] = useState({
-    cliente: "",
-    tipo1: "",
-    tipo2: "",
-    status: "Todos",
-    arquivo: null,
+    usuarioId: "",
+    descricao: "",
+    laudo: "",
+    arquivoUrl: "",
   });
-  const [saved, setSaved] = useState(false);
+  const [saving,    setSaving]    = useState(false);
+  const [saveError, setSaveError] = useState("");
+
+  useEffect(() => {
+    fetchJson("/api/admin/usuarios?role=USER", { headers: getAuthHeader() })
+      .then((us) => setUsuarios(us))
+      .catch((err) => setLoadError(err.message || "Erro ao carregar usuários."));
+  }, []);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
-  const handleFile = (e) => {
-    const file = e.target.files?.[0];
-    if (file) set("arquivo", file.name);
-  };
-
   const handleSave = () => {
-    if (!form.cliente || !form.tipo1) {
-      alert("Selecione o cliente e pelo menos um tipo de análise.");
+    if (!form.usuarioId || !form.descricao.trim()) {
+      setSaveError("Selecione o usuário e informe a descrição da análise.");
       return;
     }
-    setSaved(true);
-    setTimeout(() => { setSaved(false); navigate("analises"); }, 1200);
+    setSaveError("");
+    setSaving(true);
+    fetchJson("/api/resultados", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getAuthHeader() },
+      body: JSON.stringify({
+        usuarioId:  Number(form.usuarioId),
+        descricao:  form.descricao,
+        laudo:      form.laudo || null,
+        arquivoUrl: form.arquivoUrl || null,
+      }),
+    })
+      .then(() => navigate("analises"))
+      .catch((err) => {
+        setSaveError(err.message || "Erro ao salvar. Tente novamente.");
+        setSaving(false);
+      });
   };
 
   return (
     <div className="cadastrar-page">
       <h1 className="page-title">Cadastrar Análise</h1>
 
+      {loadError && (
+        <p style={{ color: "#c0392b", marginBottom: "16px", fontSize: "0.9rem" }}>
+          {loadError}
+        </p>
+      )}
+
       <div className="form-card">
-        {/* Cliente */}
         <div className="form-section">
-          <label className="form-label">Selecionar Cliente</label>
+          <label className="form-label">Selecionar Usuário (Cliente)</label>
           <div className="select-wrap">
             <select
               className="form-select"
-              value={form.cliente}
-              onChange={(e) => set("cliente", e.target.value)}
+              value={form.usuarioId}
+              onChange={(e) => set("usuarioId", e.target.value)}
+              disabled={!!loadError}
             >
-              <option value="">Selecionar Cliente</option>
-              {clientes.map((c) => <option key={c}>{c}</option>)}
+              <option value="">Selecionar Usuário</option>
+              {usuarios.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.nomePessoa ? `${u.nomePessoa} (${u.username})` : u.username}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
-        {/* Tipos */}
-        <div className="form-row">
-          <div className="form-section">
-            <label className="form-label">Tipo de Análise</label>
-            <div className="select-wrap">
-              <select
-                className="form-select"
-                value={form.tipo1}
-                onChange={(e) => set("tipo1", e.target.value)}
-              >
-                <option value="">Selecionar Tipo</option>
-                {tipos.map((t) => <option key={t}>{t}</option>)}
-              </select>
-            </div>
-          </div>
-          <div className="form-section">
-            <label className="form-label">Tipo de Análise</label>
-            <div className="select-wrap">
-              <select
-                className="form-select"
-                value={form.tipo2}
-                onChange={(e) => set("tipo2", e.target.value)}
-              >
-                <option value="">Selecionar Tipo</option>
-                {tipos.map((t) => <option key={t}>{t}</option>)}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Upload */}
         <div className="form-section">
-          <label className="form-label">Enviar PDF do Resultado</label>
-          <label className="upload-btn">
-            <input type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFile} />
-            {form.arquivo ? `📄 ${form.arquivo}` : "Upload Arquivo"}
-          </label>
-        </div>
-
-        {/* Status */}
-        <div className="form-section">
-          <label className="form-label">Selecionar Status</label>
+          <label className="form-label">Descrição da Análise</label>
           <div className="select-wrap">
-            <select
+            <input
+              type="text"
               className="form-select"
-              value={form.status}
-              onChange={(e) => set("status", e.target.value)}
-            >
-              <option>Todos</option>
-              <option>Pendente</option>
-              <option>Concluido</option>
-              <option>Em atraso</option>
-            </select>
+              value={form.descricao}
+              onChange={(e) => set("descricao", e.target.value)}
+              placeholder="Ex: Análise de solo — Fazenda São João"
+              disabled={!!loadError}
+            />
+          </div>
+        </div>
+
+        <div className="form-section">
+          <label className="form-label">Laudo (opcional)</label>
+          <div className="select-wrap">
+            <textarea
+              className="form-select"
+              value={form.laudo}
+              onChange={(e) => set("laudo", e.target.value)}
+              placeholder="Resultado detalhado da análise..."
+              rows={4}
+              style={{ resize: "vertical", minHeight: "80px" }}
+            />
+          </div>
+        </div>
+
+        <div className="form-section">
+          <label className="form-label">URL do Arquivo (opcional)</label>
+          <div className="select-wrap">
+            <input
+              type="text"
+              className="form-select"
+              value={form.arquivoUrl}
+              onChange={(e) => set("arquivoUrl", e.target.value)}
+              placeholder="https://..."
+            />
           </div>
         </div>
       </div>
 
+      {saveError && (
+        <p style={{ color: "#c0392b", margin: "12px 0 0", fontSize: "0.9rem" }}>
+          {saveError}
+        </p>
+      )}
+
       <div className="form-actions">
         <button className="btn-secondary" onClick={() => navigate("analises")}>Cancelar</button>
-        <button className={`btn-primary ${saved ? "btn-saved" : ""}`} onClick={handleSave}>
-          {saved ? "✓ Salvo!" : "Salvar"}
+        <button
+          className={`btn-primary ${saving ? "btn-saved" : ""}`}
+          onClick={handleSave}
+          disabled={saving || !!loadError}
+        >
+          {saving ? "Salvando..." : "Salvar"}
         </button>
       </div>
     </div>

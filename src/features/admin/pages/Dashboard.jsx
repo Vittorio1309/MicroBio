@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import "../styles/Dashboard.css";
 
 const STATUS_CLASS = {
-  PENDENTE: "status-pendente",
+  EM_ANDAMENTO: "status-pendente",
   FINALIZADO: "status-concluido",
-  ACEITO: "status-concluido",
-  REJEITADO: "status-atraso",
+};
+
+const STATUS_LABEL = {
+  EM_ANDAMENTO: "Em andamento",
+  FINALIZADO: "Concluído",
 };
 
 function getAuthHeader() {
@@ -15,25 +18,33 @@ function getAuthHeader() {
 
 function formatDate(dateStr) {
   if (!dateStr) return "-";
-  const d = new Date(dateStr);
-  return d.toLocaleDateString("pt-BR");
+  return new Date(dateStr).toLocaleDateString("pt-BR");
 }
 
 export default function Dashboard({ navigate }) {
   const [stats, setStats] = useState(null);
+  const [recentes, setRecentes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/admin/dashboard/stats", {
-      headers: { "Content-Type": "application/json", ...getAuthHeader() },
-    })
-      .then((r) => {
+    Promise.all([
+      fetch("/api/admin/dashboard/stats", {
+        headers: { "Content-Type": "application/json", ...getAuthHeader() },
+      }).then((r) => {
         if (!r.ok) throw new Error(`Erro ${r.status} ao carregar estatísticas`);
         return r.json();
-      })
-      .then((data) => {
-        setStats(data);
+      }),
+      fetch("/api/dashboard/resultados-recentes", {
+        headers: { "Content-Type": "application/json", ...getAuthHeader() },
+      }).then((r) => {
+        if (!r.ok) throw new Error(`Erro ${r.status} ao carregar resultados`);
+        return r.json();
+      }),
+    ])
+      .then(([statsData, recentesData]) => {
+        setStats(statsData);
+        setRecentes(recentesData);
         setLoading(false);
       })
       .catch((err) => {
@@ -54,23 +65,23 @@ export default function Dashboard({ navigate }) {
 
       <div className="dash-stats">
         <div className="stat-card stat-blue">
-          <div className="stat-label">Novas Análises</div>
+          <div className="stat-label">Total de Análises</div>
           <div className="stat-value blue">
-            {loading ? "..." : stats?.totalOrcamentos ?? 0}
+            {loading ? "..." : stats?.totalAnalises ?? 0}
           </div>
           <div className="stat-icon">🔬</div>
         </div>
         <div className="stat-card stat-red">
-          <div className="stat-label">Pendentes</div>
+          <div className="stat-label">Em Andamento</div>
           <div className="stat-value red">
-            {loading ? "..." : stats?.totalPendente ?? 0}
+            {loading ? "..." : stats?.totalEmAndamento ?? 0}
           </div>
           <div className="stat-icon">⏳</div>
         </div>
         <div className="stat-card stat-green">
-          <div className="stat-label">Concluído</div>
+          <div className="stat-label">Concluídas</div>
           <div className="stat-value green">
-            {loading ? "..." : stats?.totalFinalizado ?? 0}
+            {loading ? "..." : stats?.totalFinalizadas ?? 0}
           </div>
           <div className="stat-icon">✅</div>
         </div>
@@ -85,38 +96,33 @@ export default function Dashboard({ navigate }) {
             <table className="results-table">
               <thead>
                 <tr>
-                  <th>Cliente</th>
-                  <th>Tipo de Análises</th>
+                  <th>Usuário</th>
+                  <th>Descrição</th>
                   <th>Data</th>
                   <th>Status</th>
                   <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {(stats?.resultadosRecentes ?? []).length === 0 ? (
+                {recentes.length === 0 ? (
                   <tr>
                     <td colSpan={5} style={{ textAlign: "center", color: "#888" }}>
                       Nenhum resultado encontrado.
                     </td>
                   </tr>
                 ) : (
-                  (stats?.resultadosRecentes ?? []).map((r) => (
-                    <tr key={r.orcamentoId}>
-                      <td>{r.nomeCliente}</td>
-                      <td className="text-muted">{r.nomeServico}</td>
-                      <td className="text-muted">{formatDate(r.dataCriacao)}</td>
+                  recentes.map((r) => (
+                    <tr key={r.id}>
+                      <td>{r.nomeUsuario}</td>
+                      <td className="text-muted">{r.descricao}</td>
+                      <td className="text-muted">{formatDate(r.dataEmissao)}</td>
                       <td>
-                        <span
-                          className={`status-badge ${STATUS_CLASS[r.statusOrcamento] || "status-pendente"}`}
-                        >
-                          {r.statusOrcamento}
+                        <span className={`status-badge ${STATUS_CLASS[r.status] || "status-pendente"}`}>
+                          {STATUS_LABEL[r.status] ?? r.status}
                         </span>
                       </td>
                       <td>
-                        <button
-                          className="btn-primary btn-sm"
-                          onClick={() => navigate("analises")}
-                        >
+                        <button className="btn-primary btn-sm" onClick={() => navigate("analises")}>
                           Editar
                         </button>
                       </td>
@@ -140,8 +146,8 @@ export default function Dashboard({ navigate }) {
             <button className="shortcut-btn" onClick={() => navigate("analises")}>
               <span>📊</span> Ver Análises
             </button>
-            <button className="shortcut-btn" onClick={() => navigate("arquivos")}>
-              <span>📁</span> Arquivos
+            <button className="shortcut-btn" onClick={() => navigate("orcamentos-solicitados")}>
+              <span>📋</span> Orçamentos
             </button>
           </div>
         </div>

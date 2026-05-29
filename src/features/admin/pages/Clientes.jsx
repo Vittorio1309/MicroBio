@@ -1,18 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/Clientes.css";
 
-const initialClientes = [
-  { id: 1, nome: "João Silva",    cpf: "123.456.789-00", email: "joao@email.com" },
-  { id: 2, nome: "Ana Souza",     cpf: "987.654.221-00", email: "ana@email.com" },
-  { id: 3, nome: "Carlos Lima",   cpf: "456.123.987-00", email: "carlos@email.com" },
-  { id: 4, nome: "Fernanda Melo", cpf: "321.654.987-00", email: "fernanda@email.com" },
-];
+function getAuthHeader() {
+  const token = localStorage.getItem("microbio_token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function fetchJson(url, options) {
+  const r = await fetch(url, options);
+  if (!r.ok) {
+    const body = await r.json().catch(() => ({}));
+    throw new Error(body.message || `Erro ${r.status}`);
+  }
+  return r.json();
+}
 
 export default function Clientes() {
-  const [clientes, setClientes] = useState(initialClientes);
-  const [search, setSearch]     = useState("");
-  const [modal, setModal]       = useState(null); // null | {mode:'novo'} | {mode:'editar', cliente}
-  const [form, setForm]         = useState({ nome: "", cpf: "", email: "" });
+  const [clientes, setClientes] = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState("");
+  const [search,   setSearch]   = useState("");
+  const [modal,    setModal]    = useState(null);
+  const [form,     setForm]     = useState({ nome: "", email: "", telefone: "" });
+  const [saving,   setSaving]   = useState(false);
+  const [saveError, setSaveError] = useState("");
+
+  useEffect(() => { loadClientes(); }, []);
+
+  async function loadClientes() {
+    setLoading(true);
+    setError("");
+    try {
+      const data = await fetchJson("/api/pessoas", { headers: getAuthHeader() });
+      setClientes(data);
+    } catch (err) {
+      setError(err.message || "Erro ao carregar clientes.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const filtered = clientes.filter(
     (c) =>
@@ -21,25 +47,45 @@ export default function Clientes() {
   );
 
   const openNovo = () => {
-    setForm({ nome: "", cpf: "", email: "" });
+    setForm({ nome: "", email: "", telefone: "" });
+    setSaveError("");
     setModal({ mode: "novo" });
   };
 
   const openEditar = (c) => {
-    setForm({ nome: c.nome, cpf: c.cpf, email: c.email });
+    setForm({ nome: c.nome, email: c.email, telefone: c.telefone ?? "" });
+    setSaveError("");
     setModal({ mode: "editar", id: c.id });
   };
 
-  const handleSave = () => {
-    if (!form.nome || !form.email) return;
-    if (modal.mode === "novo") {
-      setClientes((prev) => [...prev, { id: Date.now(), ...form }]);
-    } else {
-      setClientes((prev) =>
-        prev.map((c) => (c.id === modal.id ? { ...c, ...form } : c))
-      );
+  const handleSave = async () => {
+    if (!form.nome || !form.email) {
+      setSaveError("Nome e e-mail são obrigatórios.");
+      return;
     }
-    setModal(null);
+    setSaving(true);
+    setSaveError("");
+    try {
+      if (modal.mode === "novo") {
+        await fetchJson("/api/pessoas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...getAuthHeader() },
+          body: JSON.stringify({ nome: form.nome, email: form.email, telefone: form.telefone || null }),
+        });
+      } else {
+        await fetchJson(`/api/pessoas/${modal.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", ...getAuthHeader() },
+          body: JSON.stringify({ nome: form.nome, email: form.email, telefone: form.telefone || null }),
+        });
+      }
+      setModal(null);
+      await loadClientes();
+    } catch (err) {
+      setSaveError(err.message || "Erro ao salvar. Tente novamente.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -50,30 +96,34 @@ export default function Clientes() {
         <input
           type="text"
           className="clientes-search"
-          placeholder="Buscar"
+          placeholder="Buscar por nome ou e-mail"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <button className="btn-primary" onClick={openNovo}>
-          Novo Cliente ∨
+          Novo Cliente
         </button>
       </div>
 
-      <div className="clientes-list">
-        {filtered.length === 0 && (
-          <p className="clientes-empty">Nenhum cliente encontrado.</p>
-        )}
-        {filtered.map((c) => (
-          <div key={c.id} className="cliente-row">
-            <span className="cliente-nome">{c.nome}</span>
-            <span className="cliente-cpf">{c.cpf}</span>
-            <span className="cliente-email">{c.email}</span>
-            <button className="btn-primary btn-sm" onClick={() => openEditar(c)}>Editar</button>
-          </div>
-        ))}
-      </div>
+      {loading && <p className="clientes-empty">Carregando clientes...</p>}
+      {error   && <p className="clientes-empty" style={{ color: "#c0392b" }}>{error}</p>}
 
-      {/* Modal */}
+      {!loading && !error && (
+        <div className="clientes-list">
+          {filtered.length === 0 && (
+            <p className="clientes-empty">Nenhum cliente encontrado.</p>
+          )}
+          {filtered.map((c) => (
+            <div key={c.id} className="cliente-row">
+              <span className="cliente-nome">{c.nome}</span>
+              <span className="cliente-cpf">{c.telefone ?? "—"}</span>
+              <span className="cliente-email">{c.email}</span>
+              <button className="btn-primary btn-sm" onClick={() => openEditar(c)}>Editar</button>
+            </div>
+          ))}
+        </div>
+      )}
+
       {modal && (
         <div className="modal-overlay" onClick={() => setModal(null)}>
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
@@ -91,15 +141,6 @@ export default function Clientes() {
                 />
               </div>
               <div className="modal-field">
-                <label className="form-label">CPF</label>
-                <input
-                  className="modal-input"
-                  placeholder="000.000.000-00"
-                  value={form.cpf}
-                  onChange={(e) => setForm((f) => ({ ...f, cpf: e.target.value }))}
-                />
-              </div>
-              <div className="modal-field">
                 <label className="form-label">E-mail</label>
                 <input
                   className="modal-input"
@@ -109,10 +150,26 @@ export default function Clientes() {
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                 />
               </div>
+              <div className="modal-field">
+                <label className="form-label">Telefone</label>
+                <input
+                  className="modal-input"
+                  placeholder="(00) 00000-0000"
+                  value={form.telefone}
+                  onChange={(e) => setForm((f) => ({ ...f, telefone: e.target.value }))}
+                />
+              </div>
             </div>
+            {saveError && (
+              <p style={{ color: "#c0392b", fontSize: "0.85rem", margin: "8px 0 0" }}>
+                {saveError}
+              </p>
+            )}
             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setModal(null)}>Cancelar</button>
-              <button className="btn-primary" onClick={handleSave}>Salvar</button>
+              <button className="btn-primary" onClick={handleSave} disabled={saving}>
+                {saving ? "Salvando..." : "Salvar"}
+              </button>
             </div>
           </div>
         </div>

@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import Usuarios from "./Usuarios";
+import Clientes from "./Clientes";
 import Analises from "./Analises";
 import CadastrarAnalise from "./CadastrarAnalise";
+import OrcamentosSolicitados from "./OrcamentosSolicitados";
 import "../styles/admin.css";
 
 export default function AdminPanel() {
@@ -16,13 +18,14 @@ export default function AdminPanel() {
       <div className="app-layout">
         <Sidebar currentPage={page} navigate={navigate} />
         <main className="app-main">
-          {page === "dashboard" && <Dashboard navigate={navigate} />}
-          {page === "usuarios" && <Usuarios />}
-          {page === "analises" && <Analises navigate={navigate} />}
-          {page === "cadastrar-analise" && <CadastrarAnalise navigate={navigate} />}
-          {page === "arquivos" && <Placeholder title="Arquivos" />}
-          {page === "tipos-exame" && <Placeholder title="Tipos de exame" />}
-          {page === "configuracoes" && <Placeholder title="Configurações" />}
+          {page === "dashboard"        && <Dashboard navigate={navigate} />}
+          {page === "usuarios"         && <Usuarios />}
+          {page === "clientes"         && <Clientes />}
+          {page === "analises"         && <Analises navigate={navigate} />}
+          {page === "cadastrar-analise"      && <CadastrarAnalise navigate={navigate} />}
+          {page === "orcamentos-solicitados" && <OrcamentosSolicitados />}
+          {page === "tipos-exame"            && <Placeholder title="Tipos de exame" />}
+          {page === "configuracoes"    && <Placeholder title="Configurações" />}
         </main>
       </div>
     </div>
@@ -33,12 +36,13 @@ function Sidebar({ currentPage, navigate }) {
   const goToAgro = useNavigate();
 
   const items = [
-    { id: "dashboard", label: "Dashboard", icon: "⊞" },
-    { id: "usuarios", label: "Usuários", icon: null },
-    { id: "analises", label: "Análises", icon: "📄" },
-    { id: "arquivos", label: "Arquivos", icon: "📄" },
-    { id: "tipos-exame", label: "Tipos de exame", icon: "📄" },
-    { id: "configuracoes", label: "Configurações", icon: "📄" },
+    { id: "dashboard",  label: "Dashboard",      icon: "⊞" },
+    { id: "analises",   label: "Análises",        icon: "🔬" },
+    { id: "clientes",   label: "Clientes",        icon: "👥" },
+    { id: "usuarios",              label: "Usuários",             icon: "👤" },
+    { id: "orcamentos-solicitados", label: "Orçamentos",           icon: "📋" },
+    { id: "tipos-exame",           label: "Tipos de exame",       icon: "📄" },
+    { id: "configuracoes", label: "Configurações", icon: "⚙️" },
   ];
 
   return (
@@ -55,7 +59,7 @@ function Sidebar({ currentPage, navigate }) {
         {items.map((item) => (
           <button
             key={item.id}
-            className={`sidebar-item ${currentPage === item.id ? "active" : ""} ${!item.icon ? "sub-item" : ""}`}
+            className={`sidebar-item ${currentPage === item.id ? "active" : ""}`}
             onClick={() => navigate(item.id)}
           >
             {item.icon && <span className="sidebar-icon">{item.icon}</span>}
@@ -63,11 +67,16 @@ function Sidebar({ currentPage, navigate }) {
           </button>
         ))}
       </nav>
-      <button className="sidebar-logout" onClick={() => {
-        localStorage.removeItem("microbio_token");
-        localStorage.removeItem("microbio_role");
-        window.location.href = "/login";
-      }}>Sair</button>
+      <button
+        className="sidebar-logout"
+        onClick={() => {
+          localStorage.removeItem("microbio_token");
+          localStorage.removeItem("microbio_role");
+          window.location.href = "/login";
+        }}
+      >
+        Sair
+      </button>
     </aside>
   );
 }

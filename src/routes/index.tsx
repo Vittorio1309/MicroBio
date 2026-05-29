@@ -23,6 +23,12 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function ClienteRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem("microbio_token");
+  if (!token) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
 export const AppRoutes: React.FC = () => {
   return (
     <BrowserRouter>
@@ -45,14 +51,11 @@ export const AppRoutes: React.FC = () => {
         {/* Agro Platform (public) */}
         <Route path="/agro" element={<AgroPage />} />
 
-        {/* Client Portal */}
-        <Route path="/cliente" element={<ClientePanel />} />
-
         {/* Admin-only Routes */}
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
 
-        {/* Placeholder — telas de usuários a desenvolver */}
-        <Route path="/usuarios" element={<Navigate to="/admin" replace />} />
+        {/* Client Portal */}
+        <Route path="/cliente" element={<ClienteRoute><ClientePanel /></ClienteRoute>} />
 
         {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
