@@ -147,12 +147,18 @@ html, body, #root {
 
 /* ─── CONTEÚDO ─── */
 .section-content {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   color: white;
   padding: 0 12%;
   max-width: 480px;
+  margin: 0 auto;
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
@@ -166,14 +172,14 @@ html, body, #root {
 .section-title {
   font-size: 3.5rem;
   font-weight: 800;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   line-height: 1.1;
 }
 
 .section-description {
   font-size: 1rem;
   line-height: 1.5;
-  margin-bottom: 2rem;
+  margin-bottom: 1.8rem;
   opacity: 0.95;
 }
 
