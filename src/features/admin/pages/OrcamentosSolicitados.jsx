@@ -54,6 +54,46 @@ export default function OrcamentosSolicitados() {
   const [draggingId,   setDraggingId]   = useState(null);
   const [overCol,      setOverCol]      = useState(null);
 
+  // Estados para Observações
+  const [observacoes, setObservacoes] = useState([]);
+  const [obsLoading, setObsLoading] = useState(false);
+  const [newObsText, setNewObsText] = useState("");
+  const [obsError, setObsError] = useState("");
+  const [obsModalOpen, setObsModalOpen] = useState(false);
+  const [activeOrcamentoForObs, setActiveOrcamentoForObs] = useState(null);
+
+  const handleOpenObservacoes = async (orc) => {
+    setActiveOrcamentoForObs(orc);
+    setObsModalOpen(true);
+    setObsLoading(true);
+    setObsError("");
+    setNewObsText("");
+    try {
+      const data = await fetchJson(`/api/orcamentos/${orc.id}/observacoes`, { headers: getAuthHeader() });
+      setObservacoes(data || []);
+    } catch (err) {
+      setObsError(err.message || "Erro ao carregar observações.");
+    } finally {
+      setObsLoading(false);
+    }
+  };
+
+  const handleAddObservacao = async () => {
+    if (!newObsText.trim() || !activeOrcamentoForObs) return;
+    setObsError("");
+    try {
+      const added = await fetchJson(`/api/orcamentos/${activeOrcamentoForObs.id}/observacoes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeader() },
+        body: JSON.stringify({ texto: newObsText.trim() }),
+      });
+      setObservacoes((prev) => [...prev, added]);
+      setNewObsText("");
+    } catch (err) {
+      setObsError(err.message || "Erro ao adicionar observação.");
+    }
+  };
+
   useEffect(() => {
     Promise.all([
       fetchJson("/api/orcamentos?size=100&sort=dataCriacao,desc", { headers: getAuthHeader() }),
@@ -185,15 +225,24 @@ export default function OrcamentosSolicitados() {
                     <div className="kanban-card-num">#{o.id}</div>
                     <div className="kanban-card-cliente">{o.pessoaNome ?? "—"}</div>
                     <div className="kanban-card-servico">{o.servicoNome ?? "—"}</div>
-                    <div className="kanban-card-footer">
+                    <div className="kanban-card-footer" style={{ gap: "4px", flexWrap: "wrap" }}>
                       <span className="kanban-card-date">{formatDate(o.dataCriacao)}</span>
-                      <button
-                        className="btn-primary btn-sm"
-                        style={{ padding: "4px 10px", fontSize: "0.75rem" }}
-                        onClick={() => setSelected(o)}
-                      >
-                        Ver Detalhes
-                      </button>
+                      <div style={{ display: "flex", gap: "4px" }}>
+                        <button
+                          className="btn-secondary btn-sm"
+                          style={{ padding: "3px 6px", fontSize: "0.7rem", height: "auto" }}
+                          onClick={() => setSelected(o)}
+                        >
+                          Detalhes
+                        </button>
+                        <button
+                          className="btn-primary btn-sm"
+                          style={{ padding: "3px 6px", fontSize: "0.7rem", height: "auto" }}
+                          onClick={() => handleOpenObservacoes(o)}
+                        >
+                          Observações
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -301,8 +350,86 @@ export default function OrcamentosSolicitados() {
               )}
             </div>
 
-            <div className="modal-actions">
+             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setSelected(null)}>Fechar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {obsModalOpen && activeOrcamentoForObs && (
+        <div className="modal-overlay" onClick={() => { setObsModalOpen(false); setActiveOrcamentoForObs(null); }}>
+          <div
+            className="modal-card"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "560px", maxHeight: "85vh", display: "flex", flexDirection: "column" }}
+          >
+            <div className="modal-header">
+              <h2 className="modal-title">Observações - Orçamento #{activeOrcamentoForObs.id}</h2>
+              <button className="modal-close-btn" onClick={() => { setObsModalOpen(false); setActiveOrcamentoForObs(null); }}>✕</button>
+            </div>
+
+            {obsError && (
+              <p style={{ color: "#c0392b", marginBottom: "12px", fontSize: "0.88rem" }}>{obsError}</p>
+            )}
+
+            <div style={{ flex: 1, overflowY: "auto", marginBottom: "20px", paddingRight: "8px", maxHeight: "300px" }}>
+              {obsLoading ? (
+                <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Carregando observações...</p>
+              ) : observacoes.length === 0 ? (
+                <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", fontStyle: "italic", textAlign: "center", padding: "20px 0" }}>
+                  Nenhuma observação registrada.
+                </p>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {observacoes.map((obs) => (
+                    <div
+                      key={obs.id}
+                      style={{
+                        background: "var(--bg-main)",
+                        padding: "12px 14px",
+                        borderRadius: "8px",
+                        border: "1px solid var(--border)"
+                      }}
+                    >
+                      <p style={{ margin: "0 0 6px 0", fontSize: "0.88rem", color: "var(--text-primary)", whiteSpace: "pre-wrap", lineHeight: 1.4 }}>
+                        {obs.texto}
+                      </p>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.72rem", color: "var(--text-muted)" }}>
+                        <span>Por: <strong>{obs.usuarioNome}</strong></span>
+                        <span>{new Date(obs.dataCriacao).toLocaleString("pt-BR")}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-field" style={{ marginBottom: "20px" }}>
+              <label className="form-label" style={{ fontWeight: 600, fontSize: "0.8rem", color: "var(--text-primary)", marginBottom: "4px" }}>Nova Observação</label>
+              <textarea
+                className="modal-input"
+                style={{ resize: "vertical", minHeight: "70px", fontFamily: "inherit" }}
+                placeholder="Escreva detalhes ou novidades sobre este orçamento..."
+                value={newObsText}
+                onChange={(e) => setNewObsText(e.target.value)}
+              />
+            </div>
+
+            <div className="modal-actions" style={{ marginTop: "auto" }}>
+              <button
+                className="btn-secondary"
+                onClick={() => { setObsModalOpen(false); setActiveOrcamentoForObs(null); }}
+              >
+                Fechar
+              </button>
+              <button
+                className="btn-primary"
+                onClick={handleAddObservacao}
+                disabled={!newObsText.trim()}
+              >
+                Adicionar Observação
+              </button>
             </div>
           </div>
         </div>

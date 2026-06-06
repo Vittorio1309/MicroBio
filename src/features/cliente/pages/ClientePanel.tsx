@@ -74,7 +74,7 @@ function getUsernameFromToken(): string {
 }
 
 function StatusPill({ status }: { status: StatusKey }) {
-  const isOk = status === "FINALIZADO";
+  const isOk = status === "FINALIZADO" || status === "VISUALIZADO";
   return (
     <span className={`status-pill ${isOk ? "ok" : "pending"}`}>
       {isOk ? <CheckCircle2 size={13} /> : <SquareChartGantt size={13} />}
@@ -105,7 +105,7 @@ function AnaliseRow({
       </td>
       <td>
         <button
-          className={`link-action ${analise.arquivoUrl ? "primary" : ""}`}
+          className="btn-primary btn-sm"
           type="button"
           onClick={() => onOpen(analise)}
         >
@@ -183,11 +183,11 @@ function ClientSidebar({
   );
 }
 
-function StatCard({ label, value, tone }: { label: string; value: string; tone: "green" | "wine" }) {
+function StatCard({ label, value, tone }: { label: string; value: string; tone: "blue" | "red" | "green" }) {
   return (
     <div className={`client-stat ${tone}`}>
       <span className="client-stat-label">{label}</span>
-      <strong className="client-stat-value">{value}</strong>
+      <strong className={`client-stat-value ${tone}`}>{value}</strong>
     </div>
   );
 }
@@ -239,9 +239,9 @@ export default function ClientePanel() {
 
   const totalAnalises = analises.length;
   const emAndamento = analises.filter(
-    (a) => a.status === "PENDENTE" || a.status === "EM_ANDAMENTO"
+    (a) => a.status === "PENDENTE"
   ).length;
-  const concluido = analises.filter((a) => a.status === "FINALIZADO").length;
+  const concluido = analises.filter((a) => a.status === "VISUALIZADO").length;
 
   const openDetalhe = (a: Analise) => {
     setDetalhe(a);
@@ -315,8 +315,8 @@ export default function ClientePanel() {
         {currentPage === "painel" ? (
           <>
             <section className="client-stats-grid">
-              <StatCard label="Total Análises" value={loading ? "…" : String(totalAnalises)} tone="green" />
-              <StatCard label="Em Andamento" value={loading ? "…" : String(emAndamento)} tone="wine" />
+              <StatCard label="Total Análises" value={loading ? "…" : String(totalAnalises)} tone="blue" />
+              <StatCard label="Em Andamento" value={loading ? "…" : String(emAndamento)} tone="red" />
               <StatCard label="Concluído" value={loading ? "…" : String(concluido)} tone="green" />
             </section>
 
@@ -436,202 +436,62 @@ export default function ClientePanel() {
       </main>
 
       {detalhe && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.38)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 200,
-            backdropFilter: "blur(3px)",
-            padding: "16px",
-          }}
-          onClick={closeDetalhe}
-        >
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: "14px",
-              padding: "36px 40px",
-              width: "100%",
-              maxWidth: "540px",
-              maxHeight: "90vh",
-              overflowY: "auto",
-              boxShadow: "0 24px 60px rgba(0,0,0,0.18)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                marginBottom: "20px",
-              }}
-            >
-              <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1a5c35", margin: 0 }}>
-                Detalhes da Análise
-              </h2>
-              <button
-                onClick={closeDetalhe}
-                style={{
-                  background: "none",
-                  border: "none",
-                  fontSize: "1.2rem",
-                  cursor: "pointer",
-                  color: "#888",
-                  lineHeight: 1,
-                }}
-              >
-                ✕
-              </button>
+        <div className="modal-overlay" onClick={closeDetalhe}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">Detalhes da Análise</h2>
+              <button className="modal-close-btn" onClick={closeDetalhe}>✕</button>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              <div>
-                <p
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "#888",
-                    margin: "0 0 3px",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.04em",
-                  }}
-                >
-                  Descrição
-                </p>
-                <p style={{ margin: 0, fontSize: "0.95rem", color: "#1a1a1a" }}>
-                  {detalhe.descricao}
-                </p>
+            <div className="modal-fields">
+              <div className="modal-field">
+                <label className="form-label">Descrição</label>
+                <p className="modal-field-value">{detalhe.descricao}</p>
               </div>
 
               <div style={{ display: "flex", gap: "24px" }}>
-                <div>
-                  <p
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "#888",
-                      margin: "0 0 3px",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.04em",
-                    }}
-                  >
-                    Status
-                  </p>
-                  <StatusPill status={detalhe.status} />
+                <div className="modal-field">
+                  <label className="form-label">Status</label>
+                  <div>
+                    <StatusPill status={detalhe.status} />
+                  </div>
                 </div>
-                <div>
-                  <p
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "#888",
-                      margin: "0 0 3px",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.04em",
-                    }}
-                  >
-                    Data
-                  </p>
-                  <p style={{ margin: 0, fontSize: "0.88rem", color: "#555" }}>
-                    {formatDate(detalhe.dataEmissao)}
-                  </p>
+                <div className="modal-field">
+                  <label className="form-label">Data</label>
+                  <p className="modal-field-value">{formatDate(detalhe.dataEmissao)}</p>
                 </div>
               </div>
 
               {detalhe.laudo && (
-                <div>
-                  <p
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "#888",
-                      margin: "0 0 6px",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.04em",
-                    }}
-                  >
-                    Laudo
-                  </p>
-                  <div
-                    style={{ background: "#f5f5f5", borderRadius: "6px", padding: "12px 14px" }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "0.87rem",
-                        color: "#444",
-                        margin: 0,
-                        whiteSpace: "pre-wrap",
-                      }}
-                    >
-                      {detalhe.laudo}
-                    </p>
+                <div className="modal-field">
+                  <label className="form-label">Laudo</label>
+                  <div className="laudo-container">
+                    <p className="laudo-text">{detalhe.laudo}</p>
                   </div>
                 </div>
               )}
 
-              {detalhe.arquivoUrl ? (
-                <div>
-                  <p
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "#888",
-                      margin: "0 0 8px",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.04em",
-                    }}
-                  >
-                    Arquivo
-                  </p>
-                  {downloadError && (
-                    <p style={{ color: "#c0392b", fontSize: "0.82rem", marginBottom: "6px" }}>
-                      {downloadError}
-                    </p>
-                  )}
-                  <button
-                    onClick={() => handleDownload(detalhe)}
-                    disabled={downloading}
-                    style={{
-                      padding: "9px 20px",
-                      background: downloading ? "#888" : "#2d6a4f",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "7px",
-                      cursor: downloading ? "not-allowed" : "pointer",
-                      fontWeight: 600,
-                      fontSize: "0.88rem",
-                    }}
-                  >
-                    {downloading ? "Baixando..." : "Baixar Exame"}
-                  </button>
-                </div>
-              ) : (
-                <p style={{ fontSize: "0.85rem", color: "#aaa", fontStyle: "italic" }}>
-                  Nenhum arquivo disponível ainda.
-                </p>
-              )}
+              <div className="modal-field">
+                <label className="form-label">Arquivo</label>
+                {detalhe.arquivoUrl ? (
+                  <>
+                    {downloadError && <p className="download-error">{downloadError}</p>}
+                    <button
+                      className="btn-primary"
+                      onClick={() => handleDownload(detalhe)}
+                      disabled={downloading}
+                    >
+                      {downloading ? "Baixando..." : "Baixar Exame"}
+                    </button>
+                  </>
+                ) : (
+                  <p className="empty-text">Nenhum arquivo disponível ainda.</p>
+                )}
+              </div>
             </div>
 
-            <div style={{ marginTop: "28px", display: "flex", justifyContent: "flex-end" }}>
-              <button
-                onClick={closeDetalhe}
-                style={{
-                  padding: "9px 22px",
-                  background: "none",
-                  border: "1.5px solid #ccc",
-                  borderRadius: "7px",
-                  cursor: "pointer",
-                  fontSize: "0.88rem",
-                  color: "#555",
-                }}
-              >
-                Fechar
-              </button>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={closeDetalhe}>Fechar</button>
             </div>
           </div>
         </div>

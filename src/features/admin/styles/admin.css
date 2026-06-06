@@ -175,7 +175,7 @@ body {
 .status-pendente { color: var(--orange); }
 .status-concluido { color: var(--green-mid); }
 .status-atraso { color: var(--red); }
-.status-visualizado { color: #2563eb; }
+.status-visualizado { color: var(--green-mid); }
 
 /* ─── KANBAN ─── */
 .kanban-board {

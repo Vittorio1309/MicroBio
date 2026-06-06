@@ -2,12 +2,16 @@ import { useState, useEffect } from "react";
 import "../styles/Dashboard.css";
 
 const STATUS_CLASS = {
+  PENDENTE: "status-pendente",
   EM_ANDAMENTO: "status-pendente",
+  VISUALIZADO: "status-visualizado",
   FINALIZADO: "status-concluido",
 };
 
 const STATUS_LABEL = {
+  PENDENTE: "Pendente",
   EM_ANDAMENTO: "Em andamento",
+  VISUALIZADO: "Visualizado",
   FINALIZADO: "Concluído",
 };
 
