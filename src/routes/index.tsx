@@ -13,7 +13,7 @@ import ValidacaoBioinsumos from "../features/services/pages/tela_validacao_bioin
 import MonitoramentoPragas from "../features/services/pages/tela_monitoramento_pragas";
 import NossosServicos from "../features/services/pages/tela_nossos_servicos";
 import AdminPanel from "../features/admin/pages/AdminPanel";
-import ClienteDashboard from "../features/cliente/pages/ClienteDashboard";
+import ClientePanel from "../features/cliente/pages/ClientePanel";
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem("microbio_token");
@@ -55,7 +55,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
 
         {/* Client Portal */}
-        <Route path="/cliente" element={<ClienteRoute><ClienteDashboard /></ClienteRoute>} />
+        <Route path="/cliente" element={<ClienteRoute><ClientePanel /></ClienteRoute>} />
 
         {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />

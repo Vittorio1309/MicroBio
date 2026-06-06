@@ -98,13 +98,19 @@ export const Nav: React.FC = () => {
         </div>
 
         <div className="nav-actions">
-          <button
-            className="button-login"
-            onClick={() => navigate("/login")}
-            type="button"
-          >
-            Login
-          </button>
+          {(() => {
+            const token = localStorage.getItem("microbio_token");
+            const role = localStorage.getItem("microbio_role");
+            let label = "Login";
+            let path = "/login";
+            if (token && role === "ROLE_ADMIN") { label = "Voltar à tela admin"; path = "/admin"; }
+            else if (token) { label = "Voltar para os exames"; path = "/cliente"; }
+            return (
+              <button className="button-login" onClick={() => navigate(path)} type="button">
+                {label}
+              </button>
+            );
+          })()}
 <button
   className="button-orcamento"
   type="button"

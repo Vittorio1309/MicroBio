@@ -1,20 +1,28 @@
 import { useState, useEffect } from "react";
 import "../styles/Analises.css";
 import "../styles/Clientes.css";
+import "../styles/admin.css";
 
 const STATUS_LABEL = {
   PENDENTE:   "Pendente",
-  FINALIZADO: "Concluído",
   ACEITO:     "Aceito",
   REJEITADO:  "Rejeitado",
+  FINALIZADO: "Concluído",
 };
 
 const STATUS_CLASS = {
   PENDENTE:   "status-pendente",
-  FINALIZADO: "status-concluido",
   ACEITO:     "status-concluido",
   REJEITADO:  "status-atraso",
+  FINALIZADO: "status-concluido",
 };
+
+const COLUMNS = [
+  { status: "PENDENTE",   label: "Pendente",  color: "var(--orange)" },
+  { status: "ACEITO",     label: "Aceito",    color: "var(--green-mid)" },
+  { status: "REJEITADO",  label: "Rejeitado", color: "var(--red)" },
+  { status: "FINALIZADO", label: "Concluído", color: "var(--green-dark)" },
+];
 
 function getAuthHeader() {
   const token = localStorage.getItem("microbio_token");
@@ -36,13 +44,15 @@ function formatDate(dateStr) {
 }
 
 export default function OrcamentosSolicitados() {
-  const [orcamentos,  setOrcamentos]  = useState([]);
-  const [pessoasMap,  setPessoasMap]  = useState({});
-  const [loading,     setLoading]     = useState(true);
-  const [error,       setError]       = useState("");
-  const [search,      setSearch]      = useState("");
-  const [filterStatus, setFilterStatus] = useState("Todos");
-  const [selected,    setSelected]    = useState(null);
+  const [orcamentos,   setOrcamentos]   = useState([]);
+  const [pessoasMap,   setPessoasMap]   = useState({});
+  const [loading,      setLoading]      = useState(true);
+  const [error,        setError]        = useState("");
+  const [search,       setSearch]       = useState("");
+  const [selected,     setSelected]     = useState(null);
+  const [statusLoading, setStatusLoading] = useState(null);
+  const [draggingId,   setDraggingId]   = useState(null);
+  const [overCol,      setOverCol]      = useState(null);
 
   useEffect(() => {
     Promise.all([
@@ -62,15 +72,54 @@ export default function OrcamentosSolicitados() {
       });
   }, []);
 
-  const statuses = ["Todos", "PENDENTE", "ACEITO", "REJEITADO", "FINALIZADO"];
+  const handleStatusChange = async (id, newStatus) => {
+    setStatusLoading(id);
+    setError("");
+    try {
+      const updated = await fetchJson(`/api/orcamentos/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...getAuthHeader() },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      setOrcamentos((prev) => prev.map((o) => (o.id === id ? updated : o)));
+      if (selected?.id === id) setSelected(updated);
+    } catch (err) {
+      setError(err.message || "Erro ao atualizar status.");
+    } finally {
+      setStatusLoading(null);
+    }
+  };
 
+  const handleDragStart = (e, id) => {
+    e.dataTransfer.setData("id", String(id));
+    setDraggingId(id);
+  };
+
+  const handleDragEnd = () => {
+    setDraggingId(null);
+    setOverCol(null);
+  };
+
+  const handleDragOver = (e, status) => {
+    e.preventDefault();
+    setOverCol(status);
+  };
+
+  const handleDrop = async (e, newStatus) => {
+    e.preventDefault();
+    setOverCol(null);
+    const id = Number(e.dataTransfer.getData("id"));
+    const card = orcamentos.find((o) => o.id === id);
+    if (!card || card.status === newStatus) { setDraggingId(null); return; }
+    setDraggingId(null);
+    await handleStatusChange(id, newStatus);
+  };
+
+  const q = search.toLowerCase();
   const filtered = orcamentos.filter((o) => {
-    const nome    = (o.pessoaNome  ?? "").toLowerCase();
-    const servico = (o.servicoNome ?? "").toLowerCase();
-    const q = search.toLowerCase();
-    if (search && !nome.includes(q) && !servico.includes(q)) return false;
-    if (filterStatus !== "Todos" && o.status !== filterStatus) return false;
-    return true;
+    if (!search) return true;
+    return (o.pessoaNome ?? "").toLowerCase().includes(q) ||
+           (o.servicoNome ?? "").toLowerCase().includes(q);
   });
 
   const selectedPessoa = selected ? pessoasMap[selected.pessoaId] : null;
@@ -85,26 +134,15 @@ export default function OrcamentosSolicitados() {
 
       <div className="analises-divider" />
 
-      <div className="analises-filters">
+      <div className="analises-filters" style={{ marginBottom: "24px" }}>
         <input
           type="text"
           className="filter-select"
           placeholder="Buscar por cliente ou serviço..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ minWidth: "220px" }}
+          style={{ minWidth: "240px" }}
         />
-        <select
-          className="filter-select"
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-        >
-          {statuses.map((s) => (
-            <option key={s} value={s}>
-              {s === "Todos" ? "Status: Todos" : STATUS_LABEL[s] ?? s}
-            </option>
-          ))}
-        </select>
       </div>
 
       {error && (
@@ -113,42 +151,55 @@ export default function OrcamentosSolicitados() {
 
       {loading ? (
         <div className="analises-empty"><p>Carregando...</p></div>
-      ) : filtered.length === 0 ? (
-        <div className="analises-empty"><p>Nenhum orçamento encontrado.</p></div>
       ) : (
-        <div className="analises-table-wrap">
-          <table className="analises-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Cliente</th>
-                <th>Serviço</th>
-                <th>Data</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((o) => (
-                <tr key={o.id}>
-                  <td className="text-muted">{o.id}</td>
-                  <td>{o.pessoaNome ?? "—"}</td>
-                  <td className="text-muted">{o.servicoNome ?? "—"}</td>
-                  <td className="text-muted">{formatDate(o.dataCriacao)}</td>
-                  <td>
-                    <span className={`status-badge ${STATUS_CLASS[o.status] ?? "status-pendente"}`}>
-                      {STATUS_LABEL[o.status] ?? o.status}
-                    </span>
-                  </td>
-                  <td>
-                    <button className="btn-primary btn-sm" onClick={() => setSelected(o)}>
-                      Ver Detalhes
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="kanban-board">
+          {COLUMNS.map((col) => {
+            const cards = filtered.filter((o) => o.status === col.status);
+            return (
+              <div
+                key={col.status}
+                className={`kanban-col${overCol === col.status ? " kanban-col-over" : ""}`}
+                onDragOver={(e) => handleDragOver(e, col.status)}
+                onDragLeave={() => setOverCol(null)}
+                onDrop={(e) => handleDrop(e, col.status)}
+              >
+                <div className="kanban-col-header">
+                  <span style={{ color: col.color }}>{col.label}</span>
+                  <span className="kanban-count">{cards.length}</span>
+                </div>
+
+                {cards.length === 0 && (
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", textAlign: "center", padding: "20px 0" }}>
+                    Nenhum orçamento
+                  </div>
+                )}
+
+                {cards.map((o) => (
+                  <div
+                    key={o.id}
+                    className={`kanban-card${draggingId === o.id ? " kanban-card-dragging" : ""}`}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, o.id)}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <div className="kanban-card-num">#{o.id}</div>
+                    <div className="kanban-card-cliente">{o.pessoaNome ?? "—"}</div>
+                    <div className="kanban-card-servico">{o.servicoNome ?? "—"}</div>
+                    <div className="kanban-card-footer">
+                      <span className="kanban-card-date">{formatDate(o.dataCriacao)}</span>
+                      <button
+                        className="btn-primary btn-sm"
+                        style={{ padding: "4px 10px", fontSize: "0.75rem" }}
+                        onClick={() => setSelected(o)}
+                      >
+                        Ver Detalhes
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -157,7 +208,7 @@ export default function OrcamentosSolicitados() {
           <div
             className="modal-card"
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: "560px", maxHeight: "80vh", overflowY: "auto" }}
+            style={{ maxWidth: "560px", maxHeight: "85vh", overflowY: "auto" }}
           >
             <h2 className="modal-title">Orçamento #{selected.id}</h2>
 
@@ -198,10 +249,25 @@ export default function OrcamentosSolicitados() {
               </div>
 
               <div className="modal-field">
-                <label className="form-label">Status</label>
+                <label className="form-label">Status atual</label>
                 <span className={`status-badge ${STATUS_CLASS[selected.status] ?? "status-pendente"}`}>
                   {STATUS_LABEL[selected.status] ?? selected.status}
                 </span>
+              </div>
+
+              <div className="modal-field">
+                <label className="form-label">Alterar Status</label>
+                <select
+                  className="filter-select"
+                  style={{ width: "100%", marginTop: "4px" }}
+                  value={selected.status}
+                  disabled={statusLoading === selected.id}
+                  onChange={(e) => handleStatusChange(selected.id, e.target.value)}
+                >
+                  {COLUMNS.map((col) => (
+                    <option key={col.status} value={col.status}>{col.label}</option>
+                  ))}
+                </select>
               </div>
 
               {selected.observacao && (
@@ -220,10 +286,7 @@ export default function OrcamentosSolicitados() {
                     {selected.respostas.map((r, i) => (
                       <div
                         key={i}
-                        style={{
-                          borderLeft: "3px solid var(--green-light)",
-                          paddingLeft: "12px",
-                        }}
+                        style={{ borderLeft: "3px solid var(--green-light)", paddingLeft: "12px" }}
                       >
                         <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "3px" }}>
                           {r.pergunta}

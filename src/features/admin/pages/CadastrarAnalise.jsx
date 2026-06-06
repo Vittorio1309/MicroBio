@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "../styles/CadastrarAnalise.css";
 
 function getAuthHeader() {
@@ -22,10 +22,11 @@ export default function CadastrarAnalise({ navigate }) {
     usuarioId: "",
     descricao: "",
     laudo: "",
-    arquivoUrl: "",
   });
+  const [arquivo,   setArquivo]   = useState(null);
   const [saving,    setSaving]    = useState(false);
   const [saveError, setSaveError] = useState("");
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchJson("/api/admin/usuarios?role=USER", { headers: getAuthHeader() })
@@ -35,28 +36,44 @@ export default function CadastrarAnalise({ navigate }) {
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.usuarioId || !form.descricao.trim()) {
       setSaveError("Selecione o usuário e informe a descrição da análise.");
       return;
     }
     setSaveError("");
     setSaving(true);
-    fetchJson("/api/resultados", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...getAuthHeader() },
-      body: JSON.stringify({
-        usuarioId:  Number(form.usuarioId),
-        descricao:  form.descricao,
-        laudo:      form.laudo || null,
-        arquivoUrl: form.arquivoUrl || null,
-      }),
-    })
-      .then(() => navigate("analises"))
-      .catch((err) => {
-        setSaveError(err.message || "Erro ao salvar. Tente novamente.");
-        setSaving(false);
+    try {
+      const resultado = await fetchJson("/api/resultados", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeader() },
+        body: JSON.stringify({
+          usuarioId: Number(form.usuarioId),
+          descricao: form.descricao,
+          laudo:     form.laudo || null,
+          arquivoUrl: null,
+        }),
       });
+
+      if (arquivo) {
+        const formData = new FormData();
+        formData.append("file", arquivo);
+        const r = await fetch(`/api/resultados/${resultado.id}/upload`, {
+          method: "POST",
+          headers: getAuthHeader(),
+          body: formData,
+        });
+        if (!r.ok) {
+          const body = await r.json().catch(() => ({}));
+          throw new Error(body.message || `Erro ao fazer upload (${r.status})`);
+        }
+      }
+
+      navigate("analises");
+    } catch (err) {
+      setSaveError(err.message || "Erro ao salvar. Tente novamente.");
+      setSaving(false);
+    }
   };
 
   return (
@@ -118,15 +135,33 @@ export default function CadastrarAnalise({ navigate }) {
         </div>
 
         <div className="form-section">
-          <label className="form-label">URL do Arquivo (opcional)</label>
-          <div className="select-wrap">
+          <label className="form-label">Arquivo PDF (opcional)</label>
+          <div className="select-wrap" style={{ gap: "8px" }}>
             <input
-              type="text"
-              className="form-select"
-              value={form.arquivoUrl}
-              onChange={(e) => set("arquivoUrl", e.target.value)}
-              placeholder="https://..."
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,application/pdf"
+              style={{ display: "none" }}
+              onChange={(e) => setArquivo(e.target.files[0] ?? null)}
             />
+            <button
+              type="button"
+              className="form-select"
+              style={{ textAlign: "left", cursor: "pointer", background: "var(--bg-white, #fff)" }}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={!!loadError}
+            >
+              {arquivo ? arquivo.name : "Selecionar arquivo PDF..."}
+            </button>
+            {arquivo && (
+              <button
+                type="button"
+                style={{ fontSize: "0.8rem", color: "#888", background: "none", border: "none", cursor: "pointer", padding: "2px 4px" }}
+                onClick={() => { setArquivo(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+              >
+                ✕ remover
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -138,7 +173,7 @@ export default function CadastrarAnalise({ navigate }) {
       )}
 
       <div className="form-actions">
-        <button className="btn-secondary" onClick={() => navigate("analises")}>Cancelar</button>
+        <button className="btn-secondary" onClick={() => navigate("analises")} disabled={saving}>Cancelar</button>
         <button
           className={`btn-primary ${saving ? "btn-saved" : ""}`}
           onClick={handleSave}

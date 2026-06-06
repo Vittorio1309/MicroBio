@@ -2,18 +2,31 @@ import { useState, useEffect } from "react";
 import "../styles/Analises.css";
 
 const STATUS_LABEL = {
+  PENDENTE:     "Pendente",
   EM_ANDAMENTO: "Em andamento",
+  VISUALIZADO:  "Visualizado",
   FINALIZADO:   "Concluído",
 };
 
 const STATUS_CLASS = {
+  PENDENTE:     "status-pendente",
   EM_ANDAMENTO: "status-pendente",
+  VISUALIZADO:  "status-visualizado",
   FINALIZADO:   "status-concluido",
 };
 
 function getAuthHeader() {
   const token = localStorage.getItem("microbio_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function fetchJson(url, options) {
+  const r = await fetch(url, options);
+  if (!r.ok) {
+    const body = await r.json().catch(() => ({}));
+    throw new Error(body.message || `Erro ${r.status}`);
+  }
+  return r.status === 204 ? null : r.json();
 }
 
 function formatDate(dateStr) {
@@ -38,12 +51,14 @@ function isInDateRange(rawDate, range) {
 }
 
 export default function Analises({ navigate }) {
-  const [analises,     setAnalises]     = useState([]);
-  const [loading,      setLoading]      = useState(true);
-  const [search,       setSearch]       = useState("");
+  const [analises,      setAnalises]      = useState([]);
+  const [loading,       setLoading]       = useState(true);
+  const [search,        setSearch]        = useState("");
   const [filterUsuario, setFilterUsuario] = useState("Todos");
   const [filterStatus,  setFilterStatus]  = useState("Todos");
   const [filterDate,    setFilterDate]    = useState("todos");
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [deleteError,   setDeleteError]   = useState("");
 
   useEffect(() => {
     fetch("/api/resultados", { headers: getAuthHeader() })
@@ -55,8 +70,19 @@ export default function Analises({ navigate }) {
       .catch(() => setLoading(false));
   }, []);
 
+  const handleDelete = async (id) => {
+    setDeleteError("");
+    try {
+      await fetchJson(`/api/resultados/${id}`, { method: "DELETE", headers: getAuthHeader() });
+      setAnalises((prev) => prev.filter((a) => a.id !== id));
+      setConfirmDeleteId(null);
+    } catch (err) {
+      setDeleteError(err.message || "Erro ao deletar análise.");
+    }
+  };
+
   const usuarios = ["Todos", ...new Set(analises.map((a) => a.username))];
-  const statuses  = ["Todos", "EM_ANDAMENTO", "FINALIZADO"];
+  const statuses  = ["Todos", "PENDENTE", "EM_ANDAMENTO", "VISUALIZADO", "FINALIZADO"];
 
   const filtered = analises.filter((a) => {
     if (search && !a.username.toLowerCase().includes(search.toLowerCase()) &&
@@ -107,6 +133,10 @@ export default function Analises({ navigate }) {
         </select>
       </div>
 
+      {deleteError && (
+        <p style={{ color: "#c0392b", marginBottom: "12px", fontSize: "0.88rem" }}>{deleteError}</p>
+      )}
+
       {loading ? (
         <div className="analises-empty"><p>Carregando...</p></div>
       ) : filtered.length === 0 ? (
@@ -137,12 +167,31 @@ export default function Analises({ navigate }) {
                     </span>
                   </td>
                   <td>
-                    <button
-                      className="btn-primary btn-sm"
-                      onClick={() => navigate("cadastrar-analise")}
-                    >
-                      Editar
-                    </button>
+                    {confirmDeleteId === a.id ? (
+                      <span style={{ display: "inline-flex", gap: "8px", alignItems: "center", fontSize: "0.83rem" }}>
+                        <span style={{ color: "#6b7280" }}>Tem certeza? Esta análise será removida para o usuário também.</span>
+                        <button
+                          style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: "6px", padding: "5px 12px", cursor: "pointer", fontWeight: 600, fontSize: "0.8rem" }}
+                          onClick={() => handleDelete(a.id)}
+                        >
+                          Sim, deletar
+                        </button>
+                        <button
+                          className="btn-secondary"
+                          style={{ padding: "5px 10px", fontSize: "0.8rem" }}
+                          onClick={() => { setConfirmDeleteId(null); setDeleteError(""); }}
+                        >
+                          Cancelar
+                        </button>
+                      </span>
+                    ) : (
+                      <button
+                        style={{ background: "none", color: "#dc2626", border: "1px solid #dc2626", borderRadius: "6px", padding: "5px 12px", cursor: "pointer", fontWeight: 600, fontSize: "0.8rem" }}
+                        onClick={() => { setConfirmDeleteId(a.id); setDeleteError(""); }}
+                      >
+                        Deletar
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

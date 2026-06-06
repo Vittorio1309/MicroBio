@@ -149,6 +149,8 @@ body {
 
 .btn-primary:hover { background: var(--green-mid); transform: translateY(-1px); box-shadow: var(--shadow); }
 
+.btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+
 .btn-secondary {
   background: #fff;
   color: var(--text-secondary);
@@ -173,6 +175,81 @@ body {
 .status-pendente { color: var(--orange); }
 .status-concluido { color: var(--green-mid); }
 .status-atraso { color: var(--red); }
+.status-visualizado { color: #2563eb; }
+
+/* ─── KANBAN ─── */
+.kanban-board {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  align-items: flex-start;
+}
+
+.kanban-col {
+  flex: 1;
+  min-width: 200px;
+  background: var(--bg-main);
+  border-radius: var(--radius);
+  padding: 14px 10px;
+  border: 1.5px solid var(--border);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.kanban-col-over {
+  background: var(--green-light);
+  border-color: var(--green-mid);
+}
+
+.kanban-col-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.kanban-count {
+  background: var(--border);
+  color: var(--text-secondary);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 0.72rem;
+}
+
+.kanban-card {
+  background: var(--bg-white);
+  border-radius: 8px;
+  padding: 11px 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  cursor: grab;
+  user-select: none;
+  transition: box-shadow 0.15s, opacity 0.15s;
+}
+
+.kanban-card:hover { box-shadow: var(--shadow-md); }
+.kanban-card:active { cursor: grabbing; }
+.kanban-card-dragging { opacity: 0.4; }
+
+.kanban-card-num { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; }
+.kanban-card-cliente { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.kanban-card-servico { font-size: 0.78rem; color: var(--text-muted); }
+
+.kanban-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 9px;
+}
+
+.kanban-card-date { font-size: 0.72rem; color: var(--text-muted); }
 
 /* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {

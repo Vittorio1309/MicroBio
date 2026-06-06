@@ -6,6 +6,7 @@ import Clientes from "./Clientes";
 import Analises from "./Analises";
 import CadastrarAnalise from "./CadastrarAnalise";
 import OrcamentosSolicitados from "./OrcamentosSolicitados";
+import TiposExame from "./TiposExame";
 import "../styles/admin.css";
 
 export default function AdminPanel() {
@@ -24,7 +25,7 @@ export default function AdminPanel() {
           {page === "analises"         && <Analises navigate={navigate} />}
           {page === "cadastrar-analise"      && <CadastrarAnalise navigate={navigate} />}
           {page === "orcamentos-solicitados" && <OrcamentosSolicitados />}
-          {page === "tipos-exame"            && <Placeholder title="Tipos de exame" />}
+          {page === "tipos-exame"            && <TiposExame />}
           {page === "configuracoes"    && <Placeholder title="Configurações" />}
         </main>
       </div>
@@ -38,7 +39,7 @@ function Sidebar({ currentPage, navigate }) {
   const items = [
     { id: "dashboard",  label: "Dashboard",      icon: "⊞" },
     { id: "analises",   label: "Análises",        icon: "🔬" },
-    { id: "clientes",   label: "Clientes",        icon: "👥" },
+    { id: "clientes",   label: "Leads",           icon: "👥" },
     { id: "usuarios",              label: "Usuários",             icon: "👤" },
     { id: "orcamentos-solicitados", label: "Orçamentos",           icon: "📋" },
     { id: "tipos-exame",           label: "Tipos de exame",       icon: "📄" },

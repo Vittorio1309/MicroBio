@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/Clientes.css";
 
-const API_BASE = "/api/admin/usuarios";
-
 function getAuthHeader() {
   const token = localStorage.getItem("microbio_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -17,50 +15,54 @@ async function fetchJson(url, options) {
   return r.status === 204 ? null : r.json();
 }
 
-export default function Usuarios() {
-  const [usuarios, setUsuarios] = useState([]);
+const EMPTY_FORM = { nome: "", descricao: "", preco: "", tipo: "" };
+
+const TIPO_LABEL = { AGUA: "Água", TERRA: "Terra" };
+
+export default function TiposExame() {
+  const [servicos, setServicos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState(null);
-  const [form, setForm] = useState({ username: "", password: "", role: "USER" });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
-    fetchUsuarios();
+    loadServicos();
   }, []);
 
-  async function fetchUsuarios() {
+  async function loadServicos() {
     setLoading(true);
     setError("");
     try {
-      const data = await fetchJson(API_BASE, { headers: { "Content-Type": "application/json", ...getAuthHeader() } });
-      setUsuarios(data);
+      const data = await fetchJson("/api/servicos", { headers: getAuthHeader() });
+      setServicos(data);
     } catch (err) {
-      setError(err.message || "Erro ao carregar usuários.");
+      setError(err.message || "Erro ao carregar tipos de exame.");
     } finally {
       setLoading(false);
     }
   }
 
-  const filtered = usuarios.filter((u) =>
-    u.username.toLowerCase().includes(search.toLowerCase())
+  const filtered = servicos.filter((s) =>
+    s.nome.toLowerCase().includes(search.toLowerCase())
   );
 
   const openNovo = () => {
-    setForm({ username: "", password: "", role: "USER" });
+    setForm(EMPTY_FORM);
     setSaveError("");
     setConfirmDelete(false);
     setModal({ mode: "novo" });
   };
 
-  const openEditar = (u) => {
-    setForm({ username: u.username, password: "", role: u.role });
+  const openEditar = (s) => {
+    setForm({ nome: s.nome, descricao: s.descricao ?? "", preco: s.preco != null ? String(s.preco) : "", tipo: s.tipo ?? "" });
     setSaveError("");
     setConfirmDelete(false);
-    setModal({ mode: "editar", id: u.id });
+    setModal({ mode: "editar", id: s.id });
   };
 
   const closeModal = () => {
@@ -70,40 +72,36 @@ export default function Usuarios() {
   };
 
   const handleSave = async () => {
-    if (modal.mode === "novo") {
-      if (!form.username || !form.password) {
-        setSaveError("Username e senha são obrigatórios.");
-        return;
-      }
-    } else {
-      if (!form.username) {
-        setSaveError("Username é obrigatório.");
-        return;
-      }
+    if (!form.nome.trim()) {
+      setSaveError("O nome do tipo de exame é obrigatório.");
+      return;
     }
-
     setSaving(true);
     setSaveError("");
     try {
+      const body = {
+        nome: form.nome.trim(),
+        descricao: form.descricao.trim() || null,
+        preco: form.preco ? parseFloat(form.preco) : null,
+        tipo: form.tipo || null,
+      };
       if (modal.mode === "novo") {
-        await fetchJson(API_BASE, {
+        await fetchJson("/api/servicos", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...getAuthHeader() },
-          body: JSON.stringify({ username: form.username, password: form.password, role: form.role, pessoaId: null }),
+          body: JSON.stringify(body),
         });
       } else {
-        const body = { username: form.username };
-        if (form.password) body.password = form.password;
-        await fetchJson(`${API_BASE}/${modal.id}`, {
+        await fetchJson(`/api/servicos/${modal.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", ...getAuthHeader() },
           body: JSON.stringify(body),
         });
       }
       closeModal();
-      await fetchUsuarios();
+      await loadServicos();
     } catch (err) {
-      setSaveError(err.message || "Erro ao salvar usuário.");
+      setSaveError(err.message || "Erro ao salvar. Tente novamente.");
     } finally {
       setSaving(false);
     }
@@ -113,14 +111,14 @@ export default function Usuarios() {
     setSaving(true);
     setSaveError("");
     try {
-      await fetchJson(`${API_BASE}/${modal.id}`, {
+      await fetchJson(`/api/servicos/${modal.id}`, {
         method: "DELETE",
         headers: getAuthHeader(),
       });
       closeModal();
-      await fetchUsuarios();
+      await loadServicos();
     } catch (err) {
-      setSaveError(err.message || "Erro ao excluir usuário.");
+      setSaveError(err.message || "Erro ao excluir tipo de exame.");
       setConfirmDelete(false);
     } finally {
       setSaving(false);
@@ -129,37 +127,40 @@ export default function Usuarios() {
 
   return (
     <div className="clientes-page">
-      <h1 className="page-title">Gerenciamento de Usuários</h1>
+      <h1 className="page-title">Tipos de Exame</h1>
 
       <div className="clientes-topbar">
         <input
           type="text"
           className="clientes-search"
-          placeholder="Buscar por username"
+          placeholder="Buscar por nome"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <button className="btn-primary" onClick={openNovo}>
-          Novo Usuário
+          Novo Tipo
         </button>
       </div>
 
-      {loading && <p className="clientes-empty">Carregando usuários...</p>}
+      {loading && <p className="clientes-empty">Carregando tipos de exame...</p>}
       {error && <p className="clientes-empty" style={{ color: "#c0392b" }}>{error}</p>}
 
       {!loading && !error && (
         <div className="clientes-list">
           {filtered.length === 0 && (
-            <p className="clientes-empty">Nenhum usuário encontrado.</p>
+            <p className="clientes-empty">Nenhum tipo de exame encontrado.</p>
           )}
-          {filtered.map((u) => (
-            <div key={u.id} className="cliente-row">
-              <span className="cliente-nome">{u.username}</span>
-              <span className="cliente-cpf">{u.role}</span>
-              <span className="cliente-email">
-                {u.pessoaId ? `Pessoa #${u.pessoaId}` : "Sem vínculo"}
+          {filtered.map((s) => (
+            <div key={s.id} className="cliente-row">
+              <span className="cliente-nome">{s.nome}</span>
+              <span className="cliente-cpf" style={{ minWidth: "70px" }}>
+                {s.tipo ? TIPO_LABEL[s.tipo] ?? s.tipo : "—"}
               </span>
-              <button className="btn-primary btn-sm" onClick={() => openEditar(u)}>Editar</button>
+              <span className="cliente-cpf">
+                {s.preco != null ? `R$ ${parseFloat(s.preco).toFixed(2)}` : "—"}
+              </span>
+              <span className="cliente-email">{s.descricao || "—"}</span>
+              <button className="btn-primary btn-sm" onClick={() => openEditar(s)}>Editar</button>
             </div>
           ))}
         </div>
@@ -169,43 +170,51 @@ export default function Usuarios() {
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title">
-              {modal.mode === "novo" ? "Novo Usuário" : "Editar Usuário"}
+              {modal.mode === "novo" ? "Novo Tipo de Exame" : "Editar Tipo de Exame"}
             </h2>
             <div className="modal-fields">
               <div className="modal-field">
-                <label className="form-label">Username</label>
+                <label className="form-label">Nome</label>
                 <input
                   className="modal-input"
-                  placeholder="nome de login"
-                  value={form.username}
-                  onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
+                  placeholder="Ex: Análise de Solo"
+                  value={form.nome}
+                  onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
                 />
               </div>
               <div className="modal-field">
-                <label className="form-label">
-                  {modal.mode === "novo" ? "Senha" : "Nova Senha (deixe em branco para não alterar)"}
-                </label>
+                <label className="form-label">Descrição (opcional)</label>
                 <input
                   className="modal-input"
-                  type="password"
-                  placeholder={modal.mode === "novo" ? "Senha" : "••••••••"}
-                  value={form.password}
-                  onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                  placeholder="Descrição do serviço"
+                  value={form.descricao}
+                  onChange={(e) => setForm((f) => ({ ...f, descricao: e.target.value }))}
                 />
               </div>
-              {modal.mode === "novo" && (
-                <div className="modal-field">
-                  <label className="form-label">Role</label>
-                  <select
-                    className="modal-input"
-                    value={form.role}
-                    onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
-                  >
-                    <option value="USER">ROLE_USER</option>
-                    <option value="ADMIN">ROLE_ADMIN</option>
-                  </select>
-                </div>
-              )}
+              <div className="modal-field">
+                <label className="form-label">Preço (opcional)</label>
+                <input
+                  className="modal-input"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={form.preco}
+                  onChange={(e) => setForm((f) => ({ ...f, preco: e.target.value }))}
+                />
+              </div>
+              <div className="modal-field">
+                <label className="form-label">Tipo de Análise (opcional)</label>
+                <select
+                  className="modal-input"
+                  value={form.tipo}
+                  onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value }))}
+                >
+                  <option value="">Nenhum</option>
+                  <option value="AGUA">Água — usa perguntas de Análise Microbiológica de Água</option>
+                  <option value="TERRA">Terra — usa perguntas de Análise de Solo Agrícola</option>
+                </select>
+              </div>
             </div>
 
             {saveError && (
@@ -216,7 +225,7 @@ export default function Usuarios() {
 
             {modal.mode === "editar" && confirmDelete && (
               <div style={{ background: "#fff3cd", border: "1px solid #ffc107", borderRadius: "8px", padding: "12px 14px", marginBottom: "16px", fontSize: "0.88rem", color: "#856404" }}>
-                Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.
+                Tem certeza que deseja excluir este tipo de exame? Orçamentos vinculados podem ser afetados.
               </div>
             )}
 
