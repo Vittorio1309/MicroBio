@@ -8,5 +8,10 @@ import "../styles/global.css";
  * Centralizes the application structure
  */
 export const App: React.FC = () => {
+  React.useEffect(() => {
+    localStorage.removeItem("microbio_token");
+    localStorage.removeItem("microbio_role");
+  }, []);
+
   return <AppRoutes />;
 };

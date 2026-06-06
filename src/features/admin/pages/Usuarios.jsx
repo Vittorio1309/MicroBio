@@ -4,7 +4,7 @@ import "../styles/Clientes.css";
 const API_BASE = "/api/admin/usuarios";
 
 function getAuthHeader() {
-  const token = localStorage.getItem("microbio_token");
+  const token = sessionStorage.getItem("microbio_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -18,6 +18,9 @@ async function fetchJson(url, options) {
 }
 
 export default function Usuarios() {
+  const activeUserRole = sessionStorage.getItem("microbio_role");
+  const isMaster = activeUserRole === "ROLE_ADMIN_MASTER";
+
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -159,7 +162,11 @@ export default function Usuarios() {
               <span className="cliente-email">
                 {u.pessoaId ? `Pessoa #${u.pessoaId}` : "Sem vínculo"}
               </span>
-              <button className="btn-primary btn-sm" onClick={() => openEditar(u)}>Editar</button>
+              {(!isMaster && (u.role === "ADMIN" || u.role === "ADMIN_MASTER")) ? (
+                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontStyle: "italic" }}>Apenas leitura</span>
+              ) : (
+                <button className="btn-primary btn-sm" onClick={() => openEditar(u)}>Editar</button>
+              )}
             </div>
           ))}
         </div>
@@ -202,7 +209,7 @@ export default function Usuarios() {
                     onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
                   >
                     <option value="USER">ROLE_USER</option>
-                    <option value="ADMIN">ROLE_ADMIN</option>
+                    {isMaster && <option value="ADMIN">ROLE_ADMIN</option>}
                   </select>
                 </div>
               )}

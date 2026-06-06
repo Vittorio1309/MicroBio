@@ -6,6 +6,14 @@ import "../styles/login.css";
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    sessionStorage.removeItem("microbio_token");
+    sessionStorage.removeItem("microbio_role");
+    localStorage.removeItem("microbio_token");
+    localStorage.removeItem("microbio_role");
+  }, []);
+
   return (
     <div className="login-page">
       <div className="background-image">

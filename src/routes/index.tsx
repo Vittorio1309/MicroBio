@@ -16,15 +16,15 @@ import AdminPanel from "../features/admin/pages/AdminPanel";
 import ClientePanel from "../features/cliente/pages/ClientePanel";
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem("microbio_token");
-  const role = localStorage.getItem("microbio_role");
+  const token = sessionStorage.getItem("microbio_token");
+  const role = sessionStorage.getItem("microbio_role");
   if (!token) return <Navigate to="/login" replace />;
-  if (role !== "ROLE_ADMIN") return <Navigate to="/agro" replace />;
+  if (role !== "ROLE_ADMIN" && role !== "ROLE_ADMIN_MASTER") return <Navigate to="/agro" replace />;
   return <>{children}</>;
 }
 
 function ClienteRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem("microbio_token");
+  const token = sessionStorage.getItem("microbio_token");
   if (!token) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }

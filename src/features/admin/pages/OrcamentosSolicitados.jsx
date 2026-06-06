@@ -25,7 +25,7 @@ const COLUMNS = [
 ];
 
 function getAuthHeader() {
-  const token = localStorage.getItem("microbio_token");
+  const token = sessionStorage.getItem("microbio_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -44,6 +44,9 @@ function formatDate(dateStr) {
 }
 
 export default function OrcamentosSolicitados() {
+  const activeUserRole = sessionStorage.getItem("microbio_role");
+  const isMaster = activeUserRole === "ROLE_ADMIN_MASTER";
+
   const [orcamentos,   setOrcamentos]   = useState([]);
   const [pessoasMap,   setPessoasMap]   = useState({});
   const [loading,      setLoading]      = useState(true);
@@ -53,6 +56,11 @@ export default function OrcamentosSolicitados() {
   const [statusLoading, setStatusLoading] = useState(null);
   const [draggingId,   setDraggingId]   = useState(null);
   const [overCol,      setOverCol]      = useState(null);
+  const [administradores, setAdministradores] = useState([]);
+
+  // SLA Prazos de Acompanhamento
+  const [deadlineHours, setDeadlineHours] = useState(48);
+  const [prazoFilter, setPrazoFilter] = useState("todos");
 
   // Estados para Observações
   const [observacoes, setObservacoes] = useState([]);
@@ -61,6 +69,26 @@ export default function OrcamentosSolicitados() {
   const [obsError, setObsError] = useState("");
   const [obsModalOpen, setObsModalOpen] = useState(false);
   const [activeOrcamentoForObs, setActiveOrcamentoForObs] = useState(null);
+
+  const getDelayStatus = (o) => {
+    if (o.status !== "PENDENTE" && o.status !== "ACEITO") {
+      return "finalizado";
+    }
+    const lastMoveStr = o.dataMovimentacao || o.dataCriacao;
+    if (!lastMoveStr) return "prazo";
+
+    const lastMove = new Date(lastMoveStr).getTime();
+    const now = new Date().getTime();
+    const diffHours = (now - lastMove) / (1000 * 60 * 60);
+
+    if (diffHours > deadlineHours) {
+      return "atrasado";
+    }
+    if (diffHours > deadlineHours * 0.75) {
+      return "alerta";
+    }
+    return "prazo";
+  };
 
   const handleOpenObservacoes = async (orc) => {
     setActiveOrcamentoForObs(orc);
@@ -95,15 +123,34 @@ export default function OrcamentosSolicitados() {
   };
 
   useEffect(() => {
+    const fetchAdminList = isMaster
+      ? fetchJson("/api/admin/usuarios/administradores", { headers: getAuthHeader() })
+      : Promise.resolve([]);
+
     Promise.all([
       fetchJson("/api/orcamentos?size=100&sort=dataCriacao,desc", { headers: getAuthHeader() }),
       fetchJson("/api/pessoas", { headers: getAuthHeader() }),
+      fetch("/api/admin/configuracoes/prazo_acompanhamento_orcamentos?valorPadrao=48 horas", { headers: getAuthHeader() })
+        .then((r) => r.ok ? r.json() : { valor: "48 horas" })
+        .catch(() => ({ valor: "48 horas" })),
+      fetchAdminList
     ])
-      .then(([orcData, pessoaList]) => {
+      .then(([orcData, pessoaList, configData, adminList]) => {
         setOrcamentos(orcData.content ?? []);
         const map = {};
         pessoaList.forEach((p) => { map[p.id] = p; });
         setPessoasMap(map);
+        setAdministradores(adminList || []);
+
+        // Parse deadline
+        const val = configData.valor || "48 horas";
+        const parts = val.trim().split(/\s+/);
+        let num = parseInt(parts[0], 10) || 48;
+        const unit = parts[1] || "horas";
+        if (unit.startsWith("dia")) {
+          num = num * 24;
+        }
+        setDeadlineHours(num);
         setLoading(false);
       })
       .catch((err) => {
@@ -159,9 +206,24 @@ export default function OrcamentosSolicitados() {
 
   const q = search.toLowerCase();
   const filtered = orcamentos.filter((o) => {
-    if (!search) return true;
-    return (o.pessoaNome ?? "").toLowerCase().includes(q) ||
-           (o.servicoNome ?? "").toLowerCase().includes(q);
+    // Filtro textual
+    const matchesSearch = !search ||
+      (o.pessoaNome ?? "").toLowerCase().includes(q) ||
+      (o.servicoNome ?? "").toLowerCase().includes(q);
+
+    if (!matchesSearch) return false;
+
+    // Filtro de prazo
+    if (prazoFilter === "todos") return true;
+
+    const delayStatus = getDelayStatus(o);
+    if (prazoFilter === "atrasado") {
+      return delayStatus === "atrasado";
+    }
+    if (prazoFilter === "prazo") {
+      return (delayStatus === "prazo" || delayStatus === "alerta") && (o.status === "PENDENTE" || o.status === "ACEITO");
+    }
+    return true;
   });
 
   const selectedPessoa = selected ? pessoasMap[selected.pessoaId] : null;
@@ -176,15 +238,26 @@ export default function OrcamentosSolicitados() {
 
       <div className="analises-divider" />
 
-      <div className="analises-filters" style={{ marginBottom: "24px" }}>
+      <div className="analises-filters" style={{ marginBottom: "24px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
         <input
           type="text"
           className="filter-select"
           placeholder="Buscar por cliente ou serviço..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ minWidth: "240px" }}
+          style={{ minWidth: "240px", height: "38px" }}
         />
+
+        <select
+          className="filter-select"
+          value={prazoFilter}
+          onChange={(e) => setPrazoFilter(e.target.value)}
+          style={{ minWidth: "180px", height: "38px" }}
+        >
+          <option value="todos">Todos os Prazos</option>
+          <option value="prazo">Dentro do Prazo</option>
+          <option value="atrasado">Atrasados</option>
+        </select>
       </div>
 
       {error && (
@@ -216,38 +289,74 @@ export default function OrcamentosSolicitados() {
                   </div>
                 )}
 
-                {cards.map((o) => (
-                  <div
-                    key={o.id}
-                    className={`kanban-card${draggingId === o.id ? " kanban-card-dragging" : ""}`}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, o.id)}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <div className="kanban-card-num">#{o.id}</div>
-                    <div className="kanban-card-cliente">{o.pessoaNome ?? "—"}</div>
-                    <div className="kanban-card-servico">{o.servicoNome ?? "—"}</div>
-                    <div className="kanban-card-footer" style={{ gap: "4px", flexWrap: "wrap" }}>
-                      <span className="kanban-card-date">{formatDate(o.dataCriacao)}</span>
-                      <div style={{ display: "flex", gap: "4px" }}>
-                        <button
-                          className="btn-secondary btn-sm"
-                          style={{ padding: "3px 6px", fontSize: "0.7rem", height: "auto" }}
-                          onClick={() => setSelected(o)}
-                        >
-                          Detalhes
-                        </button>
-                        <button
-                          className="btn-primary btn-sm"
-                          style={{ padding: "3px 6px", fontSize: "0.7rem", height: "auto" }}
-                          onClick={() => handleOpenObservacoes(o)}
-                        >
-                          Observações
-                        </button>
+                {cards.map((o) => {
+                  const delayStatus = getDelayStatus(o);
+                  let cardStyle = {};
+                  if (delayStatus === "atrasado") {
+                    cardStyle = { borderLeft: "4px solid var(--red)" };
+                  } else if (delayStatus === "alerta") {
+                    cardStyle = { borderLeft: "4px solid var(--orange)" };
+                  } else if (delayStatus === "prazo") {
+                    cardStyle = { borderLeft: "4px solid var(--green-mid)" };
+                  }
+
+                  return (
+                    <div
+                      key={o.id}
+                      className={`kanban-card${draggingId === o.id ? " kanban-card-dragging" : ""}`}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, o.id)}
+                      onDragEnd={handleDragEnd}
+                      style={cardStyle}
+                    >
+                      <div className="kanban-card-num">#{o.id}</div>
+                      <div className="kanban-card-cliente">{o.pessoaNome ?? "—"}</div>
+                      <div className="kanban-card-servico">{o.servicoNome ?? "—"}</div>
+                      {o.responsavelNome && (
+                        <div style={{ fontSize: "0.76rem", color: "var(--text-muted)", marginTop: "4px" }}>
+                          👤 {o.responsavelNome}
+                        </div>
+                      )}
+                      
+                      {/* Badge de Prazo de Acompanhamento */}
+                      {delayStatus === "atrasado" && (
+                        <div style={{ fontSize: "0.72rem", background: "#fee2e2", color: "var(--red)", padding: "3px 6px", borderRadius: "4px", fontWeight: 600, display: "inline-block", marginTop: "6px" }}>
+                          ⚠️ Acompanhamento atrasado
+                        </div>
+                      )}
+                      {delayStatus === "alerta" && (
+                        <div style={{ fontSize: "0.72rem", background: "#fffbeb", color: "var(--orange)", padding: "3px 6px", borderRadius: "4px", fontWeight: 600, display: "inline-block", marginTop: "6px" }}>
+                          ⏰ Próximo do vencimento
+                        </div>
+                      )}
+                      {delayStatus === "prazo" && (
+                        <div style={{ fontSize: "0.72rem", background: "#ecfdf5", color: "#059669", padding: "3px 6px", borderRadius: "4px", fontWeight: 600, display: "inline-block", marginTop: "6px" }}>
+                          ✓ No prazo
+                        </div>
+                      )}
+
+                      <div className="kanban-card-footer" style={{ gap: "4px", flexWrap: "wrap", marginTop: "8px" }}>
+                        <span className="kanban-card-date">{formatDate(o.dataCriacao)}</span>
+                        <div style={{ display: "flex", gap: "4px" }}>
+                          <button
+                            className="btn-secondary btn-sm"
+                            style={{ padding: "3px 6px", fontSize: "0.7rem", height: "auto" }}
+                            onClick={() => setSelected(o)}
+                          >
+                            Detalhes
+                          </button>
+                          <button
+                            className="btn-primary btn-sm"
+                            style={{ padding: "3px 6px", fontSize: "0.7rem", height: "auto" }}
+                            onClick={() => handleOpenObservacoes(o)}
+                          >
+                            Observações
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             );
           })}
@@ -293,17 +402,63 @@ export default function OrcamentosSolicitados() {
               </div>
 
               <div className="modal-field">
-                <label className="form-label">Data</label>
+                <label className="form-label">Data de Criação</label>
                 <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
                   {formatDate(selected.dataCriacao)}
                 </p>
               </div>
+
+              {selected.dataMovimentacao && (
+                <div className="modal-field">
+                  <label className="form-label">Última Movimentação</label>
+                  <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+                    {new Date(selected.dataMovimentacao).toLocaleString("pt-BR")}
+                  </p>
+                </div>
+              )}
 
               <div className="modal-field">
                 <label className="form-label">Status atual</label>
                 <span className={`status-badge ${STATUS_CLASS[selected.status] ?? "status-pendente"}`}>
                   {STATUS_LABEL[selected.status] ?? selected.status}
                 </span>
+              </div>
+
+              <div className="modal-field">
+                <label className="form-label">Responsável pelo Lead</label>
+                {isMaster ? (
+                  <select
+                    className="filter-select"
+                    style={{ width: "100%", marginTop: "4px" }}
+                    value={selected.responsavelId ?? ""}
+                    onChange={async (e) => {
+                      const val = e.target.value;
+                      const newId = val === "" ? null : Number(val);
+                      try {
+                        const updated = await fetchJson(`/api/orcamentos/${selected.id}/responsavel`, {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json", ...getAuthHeader() },
+                          body: JSON.stringify({ responsavelId: newId }),
+                        });
+                        setOrcamentos((prev) => prev.map((o) => (o.id === selected.id ? updated : o)));
+                        setSelected(updated);
+                      } catch (err) {
+                        setError(err.message || "Erro ao transferir responsável.");
+                      }
+                    }}
+                  >
+                    <option value="">Nenhum (Sem responsável)</option>
+                    {administradores.map((adm) => (
+                      <option key={adm.id} value={adm.id}>
+                        {adm.nomePessoa ? `${adm.nomePessoa} (${adm.username})` : adm.username}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+                    {selected.responsavelNome ? `👤 ${selected.responsavelNome}` : "Nenhum responsável atribuído"}
+                  </p>
+                )}
               </div>
 
               <div className="modal-field">

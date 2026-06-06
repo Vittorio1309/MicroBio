@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "../styles/CadastrarAnalise.css";
 
 function getAuthHeader() {
-  const token = localStorage.getItem("microbio_token");
+  const token = sessionStorage.getItem("microbio_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 

@@ -16,7 +16,7 @@ const STATUS_LABEL = {
 };
 
 function getAuthHeader() {
-  const token = localStorage.getItem("microbio_token");
+  const token = sessionStorage.getItem("microbio_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 

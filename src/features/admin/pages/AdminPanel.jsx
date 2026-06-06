@@ -7,6 +7,8 @@ import Analises from "./Analises";
 import CadastrarAnalise from "./CadastrarAnalise";
 import OrcamentosSolicitados from "./OrcamentosSolicitados";
 import TiposExame from "./TiposExame";
+import Configuracoes from "./Configuracoes";
+import AnaliseComercial from "./AnaliseComercial";
 import "../styles/admin.css";
 
 export default function AdminPanel() {
@@ -26,15 +28,31 @@ export default function AdminPanel() {
           {page === "cadastrar-analise"      && <CadastrarAnalise navigate={navigate} />}
           {page === "orcamentos-solicitados" && <OrcamentosSolicitados />}
           {page === "tipos-exame"            && <TiposExame />}
-          {page === "configuracoes"    && <Placeholder title="Configurações" />}
+          {page === "configuracoes"    && <Configuracoes />}
+          {page === "comercial"        && <AnaliseComercial />}
         </main>
       </div>
     </div>
   );
 }
 
+function getUsernameFromToken() {
+  const token = sessionStorage.getItem("microbio_token");
+  if (!token) return "";
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.sub || "";
+  } catch {
+    return "";
+  }
+}
+
 function Sidebar({ currentPage, navigate }) {
   const goToAgro = useNavigate();
+  const username = getUsernameFromToken();
+  const avatarText = (username || "A").substring(0, 2).toUpperCase();
+  const activeUserRole = sessionStorage.getItem("microbio_role");
+  const roleLabel = activeUserRole === "ROLE_ADMIN_MASTER" ? "Master · MicroBio" : "Admin · MicroBio";
 
   const items = [
     { id: "dashboard",  label: "Dashboard",      icon: "⊞" },
@@ -43,6 +61,7 @@ function Sidebar({ currentPage, navigate }) {
     { id: "usuarios",              label: "Usuários",             icon: "👤" },
     { id: "orcamentos-solicitados", label: "Orçamentos",           icon: "📋" },
     { id: "tipos-exame",           label: "Tipos de exame",       icon: "📄" },
+    { id: "comercial",             label: "Análise Comercial",    icon: "📈" },
     { id: "configuracoes", label: "Configurações", icon: "⚙️" },
   ];
 
@@ -68,27 +87,35 @@ function Sidebar({ currentPage, navigate }) {
           </button>
         ))}
       </nav>
+
+      {/* Perfil do usuário logado na sidebar administrativa */}
+      <div className="client-profile" style={{ borderTop: "1px solid var(--border)", margin: "0 12px 12px 12px", paddingTop: "16px" }}>
+        <div className="client-avatar">{avatarText}</div>
+        <div>
+          <div className="client-profile-name">{username || "Administrador"}</div>
+          <div className="client-profile-role">{roleLabel}</div>
+        </div>
+      </div>
+
       <button
         className="sidebar-logout"
-        onClick={() => {
-          localStorage.removeItem("microbio_token");
-          localStorage.removeItem("microbio_role");
+        onClick={async () => {
+          const token = sessionStorage.getItem("microbio_token");
+          if (token) {
+            try {
+              await fetch("/api/auth/logout", {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` }
+              });
+            } catch (ignored) {}
+          }
+          sessionStorage.removeItem("microbio_token");
+          sessionStorage.removeItem("microbio_role");
           window.location.href = "/login";
         }}
       >
         Sair
       </button>
     </aside>
-  );
-}
-
-function Placeholder({ title }) {
-  return (
-    <section>
-      <h1 className="page-title">{title}</h1>
-      <div className="form-card">
-        <p>Essa tela ainda não foi implementada.</p>
-      </div>
-    </section>
   );
 }

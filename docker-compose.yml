@@ -8,6 +8,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: microbiodb
+      TZ: America/Sao_Paulo
     ports:
       - "5432:5432"
     volumes:
@@ -36,6 +37,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       APP_UPLOADS_DIR: /app/uploads
+      TZ: America/Sao_Paulo
     volumes:
       - uploads_data:/app/uploads
 

@@ -10,6 +10,13 @@ export const ChoosePage: React.FC = () => {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState<"agro" | "saude" | null>(null);
 
+  React.useEffect(() => {
+    sessionStorage.removeItem("microbio_token");
+    sessionStorage.removeItem("microbio_role");
+    localStorage.removeItem("microbio_token");
+    localStorage.removeItem("microbio_role");
+  }, []);
+
   const agroUrl = "/agro";
   const saudeUrl = "https://microbio.uniexames.com.br/cms/inicio";
 

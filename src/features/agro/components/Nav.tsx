@@ -99,11 +99,11 @@ export const Nav: React.FC = () => {
 
         <div className="nav-actions">
           {(() => {
-            const token = localStorage.getItem("microbio_token");
-            const role = localStorage.getItem("microbio_role");
+            const token = sessionStorage.getItem("microbio_token");
+            const role = sessionStorage.getItem("microbio_role");
             let label = "Login";
             let path = "/login";
-            if (token && role === "ROLE_ADMIN") { label = "Voltar à tela admin"; path = "/admin"; }
+            if (token && (role === "ROLE_ADMIN" || role === "ROLE_ADMIN_MASTER")) { label = "Voltar à tela admin"; path = "/admin"; }
             else if (token) { label = "Voltar para os exames"; path = "/cliente"; }
             return (
               <button className="button-login" onClick={() => navigate(path)} type="button">

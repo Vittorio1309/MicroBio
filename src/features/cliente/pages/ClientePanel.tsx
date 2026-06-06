@@ -35,7 +35,7 @@ const STATUS_LABEL: Record<StatusKey, string> = {
 };
 
 function getAuthHeader(): Record<string, string> {
-  const token = localStorage.getItem("microbio_token");
+  const token = sessionStorage.getItem("microbio_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -63,7 +63,7 @@ async function downloadBlob(id: number, filename: string): Promise<void> {
 }
 
 function getUsernameFromToken(): string {
-  const token = localStorage.getItem("microbio_token");
+  const token = sessionStorage.getItem("microbio_token");
   if (!token) return "";
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
@@ -128,8 +128,8 @@ function ClientSidebar({
   const navigate = useNavigate();
 
   const logout = () => {
-    localStorage.removeItem("microbio_token");
-    localStorage.removeItem("microbio_role");
+    sessionStorage.removeItem("microbio_token");
+    sessionStorage.removeItem("microbio_role");
     window.location.href = "/login";
   };
 

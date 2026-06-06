@@ -21,9 +21,13 @@ export const LoginForm: React.FC = () => {
       });
       const data = await res.json();
       if (data.success && data.token) {
-        localStorage.setItem("microbio_token", data.token);
-        localStorage.setItem("microbio_role", data.role ?? "");
-        navigate(data.role === "ROLE_ADMIN" ? "/admin" : "/cliente");
+        sessionStorage.setItem("microbio_token", data.token);
+        sessionStorage.setItem("microbio_role", data.role ?? "");
+        navigate(
+          data.role === "ROLE_ADMIN" || data.role === "ROLE_ADMIN_MASTER"
+            ? "/admin"
+            : "/cliente"
+        );
       } else {
         setError(data.message || "Usuário ou senha incorretos");
       }
