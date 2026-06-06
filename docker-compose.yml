@@ -39,16 +39,16 @@ services:
     volumes:
       - uploads_data:/app/uploads
 
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: microbio-frontend
-    restart: always
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
+# frontend:
+#   build:
+#     context: .
+#     dockerfile: Dockerfile
+#   container_name: microbio-frontend
+#   restart: always
+#   ports:
+#     - "3000:80"
+#   depends_on:
+#     - backend
 
 volumes:
   postgres_data:

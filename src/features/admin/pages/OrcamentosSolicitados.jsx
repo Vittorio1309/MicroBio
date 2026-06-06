@@ -132,7 +132,9 @@ export default function OrcamentosSolicitados() {
 
   const handleDragStart = (e, id) => {
     e.dataTransfer.setData("id", String(id));
-    setDraggingId(id);
+    setTimeout(() => {
+      setDraggingId(id);
+    }, 0);
   };
 
   const handleDragEnd = () => {
