@@ -1,5 +1,25 @@
 # MicroBio
 
+## Fluxo de branches (GitFlow)
+
+```
+main          ← produção (estável, somente via PR)
+develop       ← integração (base para novas features)
+feature/*     ← novas funcionalidades  (ex: feature/login, feature/kanban)
+release/*     ← preparação de versão   (ex: release/1.2.0)
+hotfix/*      ← correção urgente em prod (ex: hotfix/fix-auth)
+```
+
+**Regras básicas:**
+
+- Todo desenvolvimento novo parte de `develop` → branch `feature/<nome>`
+- Ao finalizar, abrir PR de `feature/<nome>` → `develop`
+- Quando `develop` estiver pronta para release, abrir PR de `develop` → `release/<versão>`
+- Após validação, `release/<versão>` faz merge em `main` **e** em `develop`
+- Bugs críticos em produção: branch `hotfix/<nome>` a partir de `main`, merge em `main` **e** `develop`
+
+---
+
 Este repositório está focado no **Front-end (Node.js + Vite + React)**.
 
 Como o Back-end em Spring Boot ficará em outro repositório, a melhor estratégia é manter uma separação clara entre:
