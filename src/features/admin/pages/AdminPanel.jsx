@@ -51,8 +51,7 @@ function Sidebar({ currentPage, navigate }) {
   const goToAgro = useNavigate();
   const username = getUsernameFromToken();
   const avatarText = (username || "A").substring(0, 2).toUpperCase();
-  const activeUserRole = sessionStorage.getItem("microbio_role");
-  const roleLabel = activeUserRole === "ROLE_ADMIN_MASTER" ? "Master · MicroBio" : "Admin · MicroBio";
+  const roleLabel = "Admin · MicroBio";
 
   const items = [
     { id: "dashboard",  label: "Dashboard",      icon: "⊞" },

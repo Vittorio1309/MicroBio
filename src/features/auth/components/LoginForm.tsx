@@ -24,9 +24,7 @@ export const LoginForm: React.FC = () => {
         sessionStorage.setItem("microbio_token", data.token);
         sessionStorage.setItem("microbio_role", data.role ?? "");
         navigate(
-          data.role === "ROLE_ADMIN" || data.role === "ROLE_ADMIN_MASTER"
-            ? "/admin"
-            : "/cliente"
+          data.role === "ROLE_ADMIN" ? "/admin" : "/cliente"
         );
       } else {
         setError(data.message || "Usuário ou senha incorretos");

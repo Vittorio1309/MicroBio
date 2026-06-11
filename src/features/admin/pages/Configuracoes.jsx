@@ -12,11 +12,11 @@ export default function Configuracoes() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  const [numero, setNumero] = useState(48);
+  const [numero, setNumero] = useState("");
   const [unidade, setUnidade] = useState("horas");
 
   useEffect(() => {
-    fetch("/api/admin/configuracoes/prazo_acompanhamento_orcamentos?valorPadrao=48 horas", {
+    fetch("/api/admin/configuracoes/prazo_acompanhamento_orcamentos", {
       headers: getAuthHeader(),
     })
       .then((r) => {
@@ -24,11 +24,11 @@ export default function Configuracoes() {
         return r.json();
       })
       .then((data) => {
-        const val = data.valor || "48 horas";
+        const val = (data && data.valor) ? data.valor : "48 horas";
         const parts = val.trim().split(/\s+/);
         const num = parseInt(parts[0], 10) || 48;
         const unit = parts[1] || "horas";
-        setNumero(num);
+        setNumero(String(num));
         setUnidade(unit);
         setLoading(false);
       })
@@ -44,7 +44,8 @@ export default function Configuracoes() {
     setSuccess(false);
     setError("");
 
-    const valor = `${numero} ${unidade}`;
+    const numValue = Math.max(1, parseInt(numero, 10) || 1);
+    const valor = `${numValue} ${unidade}`;
 
     try {
       const r = await fetch("/api/admin/configuracoes/prazo_acompanhamento_orcamentos", {
@@ -115,7 +116,8 @@ export default function Configuracoes() {
                 className="filter-select"
                 style={{ width: "100%", height: "42px", padding: "8px 12px" }}
                 value={numero}
-                onChange={(e) => setNumero(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                onChange={(e) => setNumero(e.target.value)}
+                onFocus={(e) => e.target.select()}
               />
             </div>
 

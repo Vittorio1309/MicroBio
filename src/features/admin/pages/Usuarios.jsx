@@ -18,15 +18,13 @@ async function fetchJson(url, options) {
 }
 
 export default function Usuarios() {
-  const activeUserRole = sessionStorage.getItem("microbio_role");
-  const isMaster = activeUserRole === "ROLE_ADMIN_MASTER";
-
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState({ username: "", password: "", role: "USER" });
+  const [showPassword, setShowPassword] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -54,6 +52,7 @@ export default function Usuarios() {
 
   const openNovo = () => {
     setForm({ username: "", password: "", role: "USER" });
+    setShowPassword(false);
     setSaveError("");
     setConfirmDelete(false);
     setModal({ mode: "novo" });
@@ -61,6 +60,7 @@ export default function Usuarios() {
 
   const openEditar = (u) => {
     setForm({ username: u.username, password: "", role: u.role });
+    setShowPassword(false);
     setSaveError("");
     setConfirmDelete(false);
     setModal({ mode: "editar", id: u.id });
@@ -162,11 +162,7 @@ export default function Usuarios() {
               <span className="cliente-email">
                 {u.pessoaId ? `Pessoa #${u.pessoaId}` : "Sem vínculo"}
               </span>
-              {(!isMaster && (u.role === "ADMIN" || u.role === "ADMIN_MASTER")) ? (
-                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontStyle: "italic" }}>Apenas leitura</span>
-              ) : (
-                <button className="btn-primary btn-sm" onClick={() => openEditar(u)}>Editar</button>
-              )}
+              <button className="btn-primary btn-sm" onClick={() => openEditar(u)}>Editar</button>
             </div>
           ))}
         </div>
@@ -192,13 +188,35 @@ export default function Usuarios() {
                 <label className="form-label">
                   {modal.mode === "novo" ? "Senha" : "Nova Senha (deixe em branco para não alterar)"}
                 </label>
-                <input
-                  className="modal-input"
-                  type="password"
-                  placeholder={modal.mode === "novo" ? "Senha" : "••••••••"}
-                  value={form.password}
-                  onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-                />
+                <div style={{ position: "relative" }}>
+                  <input
+                    className="modal-input"
+                    type={showPassword ? "text" : "password"}
+                    placeholder={modal.mode === "novo" ? "Senha" : "••••••••"}
+                    value={form.password}
+                    style={{ paddingRight: "40px" }}
+                    onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                    style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
+                  >
+                    {showPassword ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#717a6d" strokeWidth="2" width="16" height="16">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#717a6d" strokeWidth="2" width="16" height="16">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
               {modal.mode === "novo" && (
                 <div className="modal-field">
@@ -209,7 +227,7 @@ export default function Usuarios() {
                     onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
                   >
                     <option value="USER">ROLE_USER</option>
-                    {isMaster && <option value="ADMIN">ROLE_ADMIN</option>}
+                    <option value="ADMIN">ROLE_ADMIN</option>
                   </select>
                 </div>
               )}

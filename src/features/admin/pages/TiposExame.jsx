@@ -15,9 +15,7 @@ async function fetchJson(url, options) {
   return r.status === 204 ? null : r.json();
 }
 
-const EMPTY_FORM = { nome: "", descricao: "", preco: "", tipo: "" };
-
-const TIPO_LABEL = { AGUA: "Água", TERRA: "Terra" };
+const EMPTY_FORM = { nome: "", descricao: "", preco: "", pergunta1: "", pergunta2: "", pergunta3: "" };
 
 export default function TiposExame() {
   const [servicos, setServicos] = useState([]);
@@ -59,7 +57,15 @@ export default function TiposExame() {
   };
 
   const openEditar = (s) => {
-    setForm({ nome: s.nome, descricao: s.descricao ?? "", preco: s.preco != null ? String(s.preco) : "", tipo: s.tipo ?? "" });
+    const perguntas = s.perguntas || [];
+    setForm({
+      nome: s.nome,
+      descricao: s.descricao ?? "",
+      preco: s.preco != null ? String(s.preco) : "",
+      pergunta1: perguntas[0]?.pergunta ?? "",
+      pergunta2: perguntas[1]?.pergunta ?? "",
+      pergunta3: perguntas[2]?.pergunta ?? "",
+    });
     setSaveError("");
     setConfirmDelete(false);
     setModal({ mode: "editar", id: s.id });
@@ -83,7 +89,7 @@ export default function TiposExame() {
         nome: form.nome.trim(),
         descricao: form.descricao.trim() || null,
         preco: form.preco ? parseFloat(form.preco) : null,
-        tipo: form.tipo || null,
+        perguntas: [form.pergunta1.trim(), form.pergunta2.trim(), form.pergunta3.trim()],
       };
       if (modal.mode === "novo") {
         await fetchJson("/api/servicos", {
@@ -153,11 +159,11 @@ export default function TiposExame() {
           {filtered.map((s) => (
             <div key={s.id} className="cliente-row">
               <span className="cliente-nome">{s.nome}</span>
-              <span className="cliente-cpf" style={{ minWidth: "70px" }}>
-                {s.tipo ? TIPO_LABEL[s.tipo] ?? s.tipo : "—"}
-              </span>
               <span className="cliente-cpf">
                 {s.preco != null ? `R$ ${parseFloat(s.preco).toFixed(2)}` : "—"}
+              </span>
+              <span className="cliente-cpf" style={{ minWidth: "110px" }}>
+                {s.perguntas?.length > 0 ? `${s.perguntas.length} pergunta${s.perguntas.length > 1 ? "s" : ""}` : "Sem perguntas"}
               </span>
               <span className="cliente-email">{s.descricao || "—"}</span>
               <button className="btn-primary btn-sm" onClick={() => openEditar(s)}>Editar</button>
@@ -204,16 +210,31 @@ export default function TiposExame() {
                 />
               </div>
               <div className="modal-field">
-                <label className="form-label">Tipo de Análise (opcional)</label>
-                <select
+                <label className="form-label">Pergunta 1</label>
+                <input
                   className="modal-input"
-                  value={form.tipo}
-                  onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value }))}
-                >
-                  <option value="">Nenhum</option>
-                  <option value="AGUA">Água — usa perguntas de Análise Microbiológica de Água</option>
-                  <option value="TERRA">Terra — usa perguntas de Análise de Solo Agrícola</option>
-                </select>
+                  placeholder="Pergunta 1"
+                  value={form.pergunta1}
+                  onChange={(e) => setForm((f) => ({ ...f, pergunta1: e.target.value }))}
+                />
+              </div>
+              <div className="modal-field">
+                <label className="form-label">Pergunta 2</label>
+                <input
+                  className="modal-input"
+                  placeholder="Pergunta 2"
+                  value={form.pergunta2}
+                  onChange={(e) => setForm((f) => ({ ...f, pergunta2: e.target.value }))}
+                />
+              </div>
+              <div className="modal-field">
+                <label className="form-label">Pergunta 3</label>
+                <input
+                  className="modal-input"
+                  placeholder="Pergunta 3"
+                  value={form.pergunta3}
+                  onChange={(e) => setForm((f) => ({ ...f, pergunta3: e.target.value }))}
+                />
               </div>
             </div>
 

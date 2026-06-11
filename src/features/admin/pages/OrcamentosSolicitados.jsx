@@ -44,8 +44,6 @@ function formatDate(dateStr) {
 }
 
 export default function OrcamentosSolicitados() {
-  const activeUserRole = sessionStorage.getItem("microbio_role");
-  const isMaster = activeUserRole === "ROLE_ADMIN_MASTER";
 
   const [orcamentos,   setOrcamentos]   = useState([]);
   const [pessoasMap,   setPessoasMap]   = useState({});
@@ -123,14 +121,12 @@ export default function OrcamentosSolicitados() {
   };
 
   useEffect(() => {
-    const fetchAdminList = isMaster
-      ? fetchJson("/api/admin/usuarios/administradores", { headers: getAuthHeader() })
-      : Promise.resolve([]);
+    const fetchAdminList = fetchJson("/api/admin/usuarios/administradores", { headers: getAuthHeader() });
 
     Promise.all([
       fetchJson("/api/orcamentos?size=100&sort=dataCriacao,desc", { headers: getAuthHeader() }),
       fetchJson("/api/pessoas", { headers: getAuthHeader() }),
-      fetch("/api/admin/configuracoes/prazo_acompanhamento_orcamentos?valorPadrao=48 horas", { headers: getAuthHeader() })
+      fetch("/api/admin/configuracoes/prazo_acompanhamento_orcamentos", { headers: getAuthHeader() })
         .then((r) => r.ok ? r.json() : { valor: "48 horas" })
         .catch(() => ({ valor: "48 horas" })),
       fetchAdminList
@@ -262,7 +258,7 @@ export default function OrcamentosSolicitados() {
 
       {error && (
         <p style={{ color: "#c0392b", marginBottom: "16px", fontSize: "0.9rem" }}>{error}</p>
-      )}
+      )}  
 
       {loading ? (
         <div className="analises-empty"><p>Carregando...</p></div>
@@ -426,39 +422,33 @@ export default function OrcamentosSolicitados() {
 
               <div className="modal-field">
                 <label className="form-label">Responsável pelo Lead</label>
-                {isMaster ? (
-                  <select
-                    className="filter-select"
-                    style={{ width: "100%", marginTop: "4px" }}
-                    value={selected.responsavelId ?? ""}
-                    onChange={async (e) => {
-                      const val = e.target.value;
-                      const newId = val === "" ? null : Number(val);
-                      try {
-                        const updated = await fetchJson(`/api/orcamentos/${selected.id}/responsavel`, {
-                          method: "PATCH",
-                          headers: { "Content-Type": "application/json", ...getAuthHeader() },
-                          body: JSON.stringify({ responsavelId: newId }),
-                        });
-                        setOrcamentos((prev) => prev.map((o) => (o.id === selected.id ? updated : o)));
-                        setSelected(updated);
-                      } catch (err) {
-                        setError(err.message || "Erro ao transferir responsável.");
-                      }
-                    }}
-                  >
-                    <option value="">Nenhum (Sem responsável)</option>
-                    {administradores.map((adm) => (
-                      <option key={adm.id} value={adm.id}>
-                        {adm.nomePessoa ? `${adm.nomePessoa} (${adm.username})` : adm.username}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-                    {selected.responsavelNome ? `👤 ${selected.responsavelNome}` : "Nenhum responsável atribuído"}
-                  </p>
-                )}
+                <select
+                  className="filter-select"
+                  style={{ width: "100%", marginTop: "4px" }}
+                  value={selected.responsavelId ?? ""}
+                  onChange={async (e) => {
+                    const val = e.target.value;
+                    const newId = val === "" ? null : Number(val);
+                    try {
+                      const updated = await fetchJson(`/api/orcamentos/${selected.id}/responsavel`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json", ...getAuthHeader() },
+                        body: JSON.stringify({ responsavelId: newId }),
+                      });
+                      setOrcamentos((prev) => prev.map((o) => (o.id === selected.id ? updated : o)));
+                      setSelected(updated);
+                    } catch (err) {
+                      setError(err.message || "Erro ao transferir responsável.");
+                    }
+                  }}
+                >
+                  <option value="">Nenhum (Sem responsável)</option>
+                  {administradores.map((adm) => (
+                    <option key={adm.id} value={adm.id}>
+                      {adm.nomePessoa ? `${adm.nomePessoa} (${adm.username})` : adm.username}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="modal-field">

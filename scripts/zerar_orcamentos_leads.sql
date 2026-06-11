@@ -2,10 +2,10 @@
 -- Preserva: usuarios, resultado_exame, servico, pergunta_servico
 -- Ordem: respostas → orcamentos → pessoas (FK de dentro para fora)
 
-BEGIN;
+-- BEGIN;
 
-DELETE FROM resposta_orcamento;
-DELETE FROM orcamento;
-DELETE FROM pessoa;
+-- DELETE FROM resposta_orcamento;
+-- DELETE FROM orcamento;
+-- DELETE FROM pessoa;
 
-COMMIT;
+-- COMMIT;

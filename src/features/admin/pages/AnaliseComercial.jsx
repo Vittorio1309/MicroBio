@@ -6,86 +6,118 @@ function getAuthHeader() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export default function AnaliseComercial() {
-  const activeUserRole = sessionStorage.getItem("microbio_role");
-  const isMaster = activeUserRole === "ROLE_ADMIN_MASTER";
+function formatBRL(value) {
+  if (value == null) return "R$ 0,00";
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+}
 
+function pct(value, total) {
+  if (!total) return 0;
+  return Math.round((value / total) * 100);
+}
+
+const STATUS_COLORS = {
+  PENDENTE:   "#f59e0b",
+  ACEITO:     "#3b82f6",
+  REJEITADO:  "#ef4444",
+  FINALIZADO: "#10b981",
+};
+
+function PieChart({ slices }) {
+  let cumulative = 0;
+  const r = 60;
+  const cx = 70;
+  const cy = 70;
+
+  const paths = slices
+    .filter((s) => s.value > 0)
+    .map((s) => {
+      const startAngle = (cumulative / 100) * 2 * Math.PI - Math.PI / 2;
+      cumulative += s.value;
+      const endAngle = (cumulative / 100) * 2 * Math.PI - Math.PI / 2;
+      const x1 = cx + r * Math.cos(startAngle);
+      const y1 = cy + r * Math.sin(startAngle);
+      const x2 = cx + r * Math.cos(endAngle);
+      const y2 = cy + r * Math.sin(endAngle);
+      const largeArc = s.value > 50 ? 1 : 0;
+      return (
+        <path
+          key={s.label}
+          d={`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`}
+          fill={s.color}
+          opacity={0.9}
+        />
+      );
+    });
+
+  return (
+    <svg viewBox="0 0 140 140" width="140" height="140" style={{ flexShrink: 0 }}>
+      {paths.length > 0 ? paths : (
+        <circle cx={cx} cy={cy} r={r} fill="#e5e7eb" />
+      )}
+    </svg>
+  );
+}
+
+function Funnel({ steps }) {
+  const max = steps[0]?.value || 1;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
+      {steps.map((step, i) => {
+        const widthPct = max > 0 ? Math.max(20, (step.value / max) * 100) : 20;
+        return (
+          <div key={step.label} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ width: "110px", fontSize: "0.8rem", fontWeight: 600, color: "var(--text-secondary)", textAlign: "right", flexShrink: 0 }}>
+              {step.label}
+            </div>
+            <div style={{ flex: 1, background: "#f3f4f6", borderRadius: "6px", height: "32px", overflow: "hidden" }}>
+              <div
+                style={{
+                  width: `${widthPct}%`,
+                  height: "100%",
+                  background: step.color,
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  paddingLeft: "10px",
+                  transition: "width 0.4s ease",
+                }}
+              >
+                <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#fff", whiteSpace: "nowrap" }}>
+                  {step.value}
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function AnaliseComercial() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Master/Global states
-  const [administradores, setAdministradores] = useState([]);
-  const [selectedResponsavelId, setSelectedResponsavelId] = useState("");
-
-  // Ranking states
-  const [ranking, setRanking] = useState([]);
-  const [rankingPeriodo, setRankingPeriodo] = useState("30dias");
-  const [rankingLoading, setRankingLoading] = useState(false);
-
-  const loadAnalytics = (respId) => {
+  useEffect(() => {
     setLoading(true);
-    let url = "/api/admin/comercial/analise";
-    if (respId) {
-      url += `?responsavelId=${respId}`;
-    }
-    fetch(url, { headers: getAuthHeader() })
+    setError("");
+    fetch("/api/admin/comercial/analise", { headers: getAuthHeader() })
       .then((r) => {
-        if (!r.ok) throw new Error("Erro ao buscar análise comercial.");
+        if (!r.ok) throw new Error(`Erro ${r.status} ao buscar análise comercial.`);
         return r.json();
       })
-      .then((res) => {
-        setData(res);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message || "Erro ao carregar dados comerciais.");
-        setLoading(false);
-      });
-  };
-
-  const loadRanking = (periodo) => {
-    if (!isMaster) return;
-    setRankingLoading(true);
-    fetch(`/api/admin/comercial/ranking?periodo=${periodo}`, { headers: getAuthHeader() })
-      .then((r) => {
-        if (!r.ok) throw new Error("Erro ao buscar ranking.");
-        return r.json();
-      })
-      .then((res) => {
-        setRanking(res || []);
-        setRankingLoading(false);
-      })
-      .catch(() => {
-        setRankingLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    loadAnalytics(selectedResponsavelId);
-  }, [selectedResponsavelId]);
-
-  useEffect(() => {
-    loadRanking(rankingPeriodo);
-  }, [rankingPeriodo]);
-
-  useEffect(() => {
-    if (isMaster) {
-      fetch("/api/admin/usuarios/administradores", { headers: getAuthHeader() })
-        .then((r) => (r.ok ? r.json() : []))
-        .then((res) => setAdministradores(res || []))
-        .catch(() => {});
-    }
+      .then((res) => { setData(res); setLoading(false); })
+      .catch((err) => { setError(err.message || "Erro ao carregar dados."); setLoading(false); });
   }, []);
 
   if (loading) {
     return (
       <section>
-        <h1 className="page-title">
-          {isMaster ? "Análise Comercial Global" : "Minha Análise Comercial"}
-        </h1>
+        <h1 className="page-title">Análise Comercial</h1>
         <div style={{ padding: "40px", textAlign: "center", color: "var(--text-secondary)" }}>
-          Carregando indicadores comerciais...
+          Carregando indicadores...
         </div>
       </section>
     );
@@ -94,11 +126,9 @@ export default function AnaliseComercial() {
   if (error) {
     return (
       <section>
-        <h1 className="page-title">
-          {isMaster ? "Análise Comercial Global" : "Minha Análise Comercial"}
-        </h1>
-        <div style={{ padding: "16px", background: "#fde8e8", color: "var(--red)", borderRadius: "8px" }}>
-          ⚠️ {error}
+        <h1 className="page-title">Análise Comercial</h1>
+        <div style={{ padding: "16px", background: "#fde8e8", color: "var(--red)", borderRadius: "8px", fontSize: "0.9rem" }}>
+          {error}
         </div>
       </section>
     );
@@ -106,343 +136,140 @@ export default function AnaliseComercial() {
 
   const {
     leadsRecebidos = 0,
-    leadsConvertidos = 0,
-    leadsPerdidos = 0,
-    taxaConversao = 0,
-    tempoMedioConversaoHoras = 0,
+    leadsPendentes = 0,
+    leadsAceitos   = 0,
+    leadsRejeitados = 0,
+    leadsConcluidos = 0,
+    taxaConversao  = 0,
+    valorPotencial = 0,
     orcamentosAtrasados = 0,
+    valorEmRisco   = 0,
+    valorConvertido = 0,
+    valorPerdido   = 0,
   } = data || {};
 
-  const leadsEmAberto = Math.max(0, leadsRecebidos - leadsConvertidos - leadsPerdidos);
-  const orcamentosNoPrazo = Math.max(0, leadsEmAberto - orcamentosAtrasados);
+  const taxaRejeicao = leadsRecebidos > 0
+    ? ((leadsRejeitados / leadsRecebidos) * 100).toFixed(1)
+    : "0.0";
 
-  // Formatar tempo médio
-  const formatTempoMedio = (horas) => {
-    if (horas === 0) return "—";
-    if (horas < 24) return `${horas.toFixed(1)}h`;
-    const dias = horas / 24;
-    return `${dias.toFixed(1)} dias`;
+  const cardStyle = {
+    background: "var(--bg-white)",
+    padding: "20px 24px",
+    borderRadius: "12px",
+    border: "1px solid var(--border)",
+    boxShadow: "var(--shadow)",
+    position: "relative",
+    overflow: "hidden",
   };
+  const bar = (color) => ({
+    height: "4px", background: color, position: "absolute", bottom: 0, left: 0, right: 0,
+  });
+  const label = { fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)" };
+  const val = (color) => ({ fontSize: "2rem", fontWeight: 700, color, margin: "6px 0 0 0" });
 
-  // Porcentagens para gráficos
-  const pctConvertidos = leadsRecebidos > 0 ? (leadsConvertidos / leadsRecebidos) * 100 : 0;
-  const pctPerdidos = leadsRecebidos > 0 ? (leadsPerdidos / leadsRecebidos) * 100 : 0;
-  const pctAberto = leadsRecebidos > 0 ? (leadsEmAberto / leadsRecebidos) * 100 : 0;
+  const pieSlices = [
+    { label: "Pendente",   value: pct(leadsPendentes,  leadsRecebidos), color: STATUS_COLORS.PENDENTE },
+    { label: "Aceito",     value: pct(leadsAceitos,    leadsRecebidos), color: STATUS_COLORS.ACEITO },
+    { label: "Rejeitado",  value: pct(leadsRejeitados, leadsRecebidos), color: STATUS_COLORS.REJEITADO },
+    { label: "Finalizado", value: pct(leadsConcluidos, leadsRecebidos), color: STATUS_COLORS.FINALIZADO },
+  ];
 
-  // Parâmetros do gráfico de Rosca (Donut Chart) SVG
-  // Circunferência de raio 40 é 2 * PI * 40 = 251.3
-  const c = 251.3;
-  const strokeConvertidos = (pctConvertidos / 100) * c;
-  const strokePerdidos = (pctPerdidos / 100) * c;
-  const strokeAberto = (pctAberto / 100) * c;
-
-  const offsetConvertidos = 0;
-  const offsetPerdidos = strokeConvertidos;
-  const offsetAberto = strokeConvertidos + strokePerdidos;
+  const funnelSteps = [
+    { label: "Total",       value: leadsRecebidos,  color: "var(--green-dark)" },
+    { label: "Pendentes",   value: leadsPendentes,   color: STATUS_COLORS.PENDENTE },
+    { label: "Aceitos",     value: leadsAceitos,     color: STATUS_COLORS.ACEITO },
+    { label: "Finalizados", value: leadsConcluidos,  color: STATUS_COLORS.FINALIZADO },
+  ];
 
   return (
     <section>
-      {/* Header com Filtros se Master */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px", borderBottom: "1px solid var(--border)", paddingBottom: "16px" }}>
-        <h1 className="page-title" style={{ margin: 0, borderBottom: "none", paddingBottom: 0 }}>
-          {isMaster ? "Análise Comercial Global" : "Minha Análise Comercial"}
-        </h1>
-        {isMaster && (
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "0.88rem", fontWeight: 600, color: "var(--text-secondary)" }}>Filtrar por Responsável:</span>
-            <select
-              className="filter-select"
-              style={{ minWidth: "200px", height: "38px", padding: "0 10px" }}
-              value={selectedResponsavelId}
-              onChange={(e) => setSelectedResponsavelId(e.target.value)}
-            >
-              <option value="">Todos os Responsáveis</option>
-              {administradores.map((adm) => (
-                <option key={adm.id} value={adm.id}>
-                  {adm.nomePessoa ? `${adm.nomePessoa} (${adm.username})` : adm.username}
-                </option>
-              ))}
-            </select>
+      <h1 className="page-title">Análise Comercial</h1>
+
+      {/* Cards de métricas */}
+      <p style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>Métricas</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "14px", marginBottom: "28px" }}>
+
+        <div style={cardStyle}>
+          <span style={label}>Total de Leads</span>
+          <h2 style={val("var(--green-dark)")}>{leadsRecebidos}</h2>
+          <div style={bar("var(--green-mid)")} />
+        </div>
+
+        <div style={cardStyle}>
+          <span style={label}>Taxa de Conversão</span>
+          <h2 style={val("#10b981")}>{Number(taxaConversao).toFixed(1)}%</h2>
+          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "2px" }}>
+            {leadsConcluidos} finalizado{leadsConcluidos !== 1 ? "s" : ""}
           </div>
-        )}
-      </div>
-
-      {/* Cards de Indicadores */}
-      <div className="metrics-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "28px" }}>
-        
-        <div className="metric-card" style={{ background: "var(--bg-white)", padding: "24px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)", position: "relative", overflow: "hidden" }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
-            {isMaster ? "Leads Recebidos" : "Meus Leads Recebidos"}
-          </span>
-          <h2 style={{ fontSize: "2.2rem", fontWeight: 700, color: "var(--green-dark)", margin: "8px 0 0 0" }}>{leadsRecebidos}</h2>
-          <div style={{ height: "4px", background: "var(--green-mid)", position: "absolute", bottom: 0, left: 0, right: 0 }} />
+          <div style={{ fontSize: "0.72rem", color: "#10b981", fontWeight: 600, marginTop: "4px" }}>
+            {formatBRL(valorConvertido)} convertido
+          </div>
+          <div style={bar("#10b981")} />
         </div>
 
-        <div className="metric-card" style={{ background: "var(--bg-white)", padding: "24px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)", position: "relative", overflow: "hidden" }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
-            {isMaster ? "Leads Convertidos" : "Meus Leads Convertidos"}
-          </span>
-          <h2 style={{ fontSize: "2.2rem", fontWeight: 700, color: "#10b981", margin: "8px 0 0 0" }}>{leadsConvertidos}</h2>
-          <div style={{ height: "4px", background: "#10b981", position: "absolute", bottom: 0, left: 0, right: 0 }} />
+        <div style={cardStyle}>
+          <span style={label}>Taxa de Rejeição</span>
+          <h2 style={val("var(--red)")}>{taxaRejeicao}%</h2>
+          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "2px" }}>
+            {leadsRejeitados} rejeitado{leadsRejeitados !== 1 ? "s" : ""}
+          </div>
+          <div style={{ fontSize: "0.72rem", color: "var(--red)", fontWeight: 600, marginTop: "4px" }}>
+            {formatBRL(valorPerdido)} perdido
+          </div>
+          <div style={bar("var(--red)")} />
         </div>
 
-        <div className="metric-card" style={{ background: "var(--bg-white)", padding: "24px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)", position: "relative", overflow: "hidden" }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
-            {isMaster ? "Leads Perdidos" : "Meus Leads Perdidos"}
-          </span>
-          <h2 style={{ fontSize: "2.2rem", fontWeight: 700, color: "var(--red)", margin: "8px 0 0 0" }}>{leadsPerdidos}</h2>
-          <div style={{ height: "4px", background: "var(--red)", position: "absolute", bottom: 0, left: 0, right: 0 }} />
+        <div style={cardStyle}>
+          <span style={label}>Oportunidades (Aceito)</span>
+          <h2 style={val("#3b82f6")}>{leadsAceitos}</h2>
+          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "2px" }}>
+            {formatBRL(valorPotencial)} potencial
+          </div>
+          <div style={bar("#3b82f6")} />
         </div>
 
-        <div className="metric-card" style={{ background: "var(--bg-white)", padding: "24px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)", position: "relative", overflow: "hidden" }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
-            {isMaster ? "Taxa de Conversão" : "Minha Taxa de Conversão"}
-          </span>
-          <h2 style={{ fontSize: "2.2rem", fontWeight: 700, color: "var(--green-main)", margin: "8px 0 0 0" }}>{taxaConversao.toFixed(1)}%</h2>
-          <div style={{ height: "4px", background: "var(--green-main)", position: "absolute", bottom: 0, left: 0, right: 0 }} />
-        </div>
-
-        <div className="metric-card" style={{ background: "var(--bg-white)", padding: "24px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)", position: "relative", overflow: "hidden" }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
-            {isMaster ? "Tempo Médio de Conversão" : "Meu Tempo Médio"}
-          </span>
-          <h2 style={{ fontSize: "2.2rem", fontWeight: 700, color: "#4f46e5", margin: "8px 0 0 0" }}>{formatTempoMedio(tempoMedioConversaoHoras)}</h2>
-          <div style={{ height: "4px", background: "#4f46e5", position: "absolute", bottom: 0, left: 0, right: 0 }} />
-        </div>
-
-        <div className="metric-card" style={{ background: "var(--bg-white)", padding: "24px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)", position: "relative", overflow: "hidden" }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
-            {isMaster ? "Orçamentos em Atraso" : "Meus Orçamentos em Atraso"}
-          </span>
-          <h2 style={{ fontSize: "2.2rem", fontWeight: 700, color: "var(--orange)", margin: "8px 0 0 0" }}>{orcamentosAtrasados}</h2>
-          <div style={{ height: "4px", background: "var(--orange)", position: "absolute", bottom: 0, left: 0, right: 0 }} />
+        <div style={cardStyle}>
+          <span style={label}>Leads Atrasados</span>
+          <h2 style={val("var(--orange)")}>{orcamentosAtrasados}</h2>
+          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "2px" }}>
+            {formatBRL(valorEmRisco)} em risco
+          </div>
+          <div style={bar("var(--orange)")} />
         </div>
 
       </div>
 
-      {/* Gráficos em Linha/Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "24px" }}>
-        
-        {/* Gráfico 1: Funil de Conversão */}
-        <div style={{ background: "var(--bg-white)", padding: "28px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)" }}>
-          <h3 style={{ fontSize: "1rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "20px" }}>Funil de Conversão Comercial</h3>
-          
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {/* Etapa 1 */}
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", marginBottom: "6px" }}>
-                <span style={{ fontWeight: 600 }}>1. Leads Recebidos (Total)</span>
-                <span style={{ fontWeight: 600, color: "var(--text-secondary)" }}>{leadsRecebidos} ({leadsRecebidos > 0 ? "100%" : "0%"})</span>
-              </div>
-              <div style={{ height: "28px", background: "var(--green-light)", borderRadius: "6px", overflow: "hidden", display: "flex", alignItems: "center", padding: "0 10px" }}>
-                <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--green-dark)", zIndex: 1 }}>Entrada de Contatos</span>
-              </div>
-            </div>
+      {/* Gráfico + Funil */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "28px" }}>
 
-            {/* Etapa 2 */}
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", marginBottom: "6px" }}>
-                <span style={{ fontWeight: 600 }}>2. Leads em Negociação / Abertos</span>
-                <span style={{ fontWeight: 600, color: "var(--text-secondary)" }}>{leadsEmAberto} ({leadsRecebidos > 0 ? ((leadsEmAberto / leadsRecebidos) * 100).toFixed(0) : 0}%)</span>
-              </div>
-              <div style={{ height: "28px", background: "#eff6ff", borderRadius: "6px", overflow: "hidden", position: "relative" }}>
-                <div style={{ height: "100%", width: `${leadsRecebidos > 0 ? (leadsEmAberto / leadsRecebidos) * 100 : 0}%`, background: "#3b82f6", borderRadius: "6px" }} />
-                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: "10px", fontSize: "0.78rem", fontWeight: 600, color: "#1e3a8a" }}>Kanban Ativo</span>
-              </div>
-            </div>
-
-            {/* Etapa 3 */}
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", marginBottom: "6px" }}>
-                <span style={{ fontWeight: 600 }}>3. Leads Convertidos (Clientes)</span>
-                <span style={{ fontWeight: 600, color: "var(--text-secondary)" }}>{leadsConvertidos} ({taxaConversao.toFixed(0)}%)</span>
-              </div>
-              <div style={{ height: "28px", background: "#ecfdf5", borderRadius: "6px", overflow: "hidden", position: "relative" }}>
-                <div style={{ height: "100%", width: `${pctConvertidos}%`, background: "#10b981", borderRadius: "6px" }} />
-                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: "10px", fontSize: "0.78rem", fontWeight: 600, color: "#064e3b" }}>Conversões Concluídas</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Gráfico 2: Distribuição de Leads */}
-        <div style={{ background: "var(--bg-white)", padding: "28px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)", display: "flex", flexDirection: "column" }}>
-          <h3 style={{ fontSize: "1rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "20px" }}>Resultado Comercial dos Leads</h3>
-          
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "32px", flex: 1, flexWrap: "wrap" }}>
-            {leadsRecebidos === 0 ? (
-              <p style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "0.88rem" }}>Sem dados para exibir</p>
-            ) : (
-              <>
-                <svg width="150" height="150" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f3f4f6" strokeWidth="12" />
-                  
-                  {/* Convertidos (Verde) */}
-                  {strokeConvertidos > 0 && (
-                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10b981" strokeWidth="12"
-                      strokeDasharray={`${strokeConvertidos} ${c}`}
-                      strokeDashoffset={-offsetConvertidos}
-                      transform="rotate(-90 50 50)"
-                    />
-                  )}
-                  
-                  {/* Perdidos (Vermelho) */}
-                  {strokePerdidos > 0 && (
-                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#dc2626" strokeWidth="12"
-                      strokeDasharray={`${strokePerdidos} ${c}`}
-                      strokeDashoffset={-offsetPerdidos}
-                      transform="rotate(-90 50 50)"
-                    />
-                  )}
-
-                  {/* Em Aberto (Azul) */}
-                  {strokeAberto > 0 && (
-                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#3b82f6" strokeWidth="12"
-                      strokeDasharray={`${strokeAberto} ${c}`}
-                      strokeDashoffset={-offsetAberto}
-                      transform="rotate(-90 50 50)"
-                    />
-                  )}
-                  
-                  <text x="50" y="55" textAnchor="middle" style={{ fontSize: "9px", fontWeight: 700, fill: "var(--text-primary)" }}>
-                    {taxaConversao.toFixed(0)}%
-                  </text>
-                  <text x="50" y="65" textAnchor="middle" style={{ fontSize: "5px", fill: "var(--text-secondary)" }}>
-                    Conversão
-                  </text>
-                </svg>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.82rem" }}>
-                    <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#10b981" }} />
-                    <span>Convertidos: <strong>{leadsConvertidos}</strong> ({pctConvertidos.toFixed(0)}%)</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.82rem" }}>
-                    <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#dc2626" }} />
-                    <span>Perdidos: <strong>{leadsPerdidos}</strong> ({pctPerdidos.toFixed(0)}%)</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.82rem" }}>
-                    <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#3b82f6" }} />
-                    <span>Em aberto: <strong>{leadsEmAberto}</strong> ({pctAberto.toFixed(0)}%)</span>
-                  </div>
+        {/* Distribuição por status */}
+        <div style={{ background: "var(--bg-white)", padding: "24px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)" }}>
+          <p style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "16px" }}>Distribuição por Status</p>
+          <div style={{ display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap" }}>
+            <PieChart slices={pieSlices} />
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              {pieSlices.map((s) => (
+                <div key={s.label} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ width: "12px", height: "12px", borderRadius: "3px", background: s.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 500 }}>
+                    {s.label}
+                  </span>
+                  <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", marginLeft: "auto", paddingLeft: "8px" }}>
+                    {s.value}%
+                  </span>
                 </div>
-              </>
-            )}
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Gráfico 3: Cumprimento do Prazo de Atendimento */}
-        <div style={{ background: "var(--bg-white)", padding: "28px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)", gridColumn: "1 / -1" }}>
-          <h3 style={{ fontSize: "1rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "16px" }}>Prazo de Acompanhamento (Leads em Aberto)</h3>
-          
-          {leadsEmAberto === 0 ? (
-            <p style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "0.88rem", padding: "16px 0" }}>Nenhum lead em aberto no momento</p>
-          ) : (
-            <div>
-              <div style={{ display: "flex", gap: "8px", height: "30px", borderRadius: "8px", overflow: "hidden", marginBottom: "16px" }}>
-                {orcamentosNoPrazo > 0 && (
-                  <div style={{
-                    background: "var(--green-mid)",
-                    width: `${(orcamentosNoPrazo / leadsEmAberto) * 100}%`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#fff",
-                    fontSize: "0.75rem",
-                    fontWeight: 600
-                  }}>
-                    No prazo: {orcamentosNoPrazo} ({((orcamentosNoPrazo / leadsEmAberto) * 100).toFixed(0)}%)
-                  </div>
-                )}
-                {orcamentosAtrasados > 0 && (
-                  <div style={{
-                    background: "var(--orange)",
-                    width: `${(orcamentosAtrasados / leadsEmAberto) * 100}%`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#fff",
-                    fontSize: "0.75rem",
-                    fontWeight: 600
-                  }}>
-                    Atrasados: {orcamentosAtrasados} ({((orcamentosAtrasados / leadsEmAberto) * 100).toFixed(0)}%)
-                  </div>
-                )}
-              </div>
-              <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.4 }}>
-                Atualmente, <strong>{((orcamentosNoPrazo / leadsEmAberto) * 100).toFixed(0)}%</strong> dos leads ativos estão dentro do tempo máximo configurado para atendimento.
-              </p>
-            </div>
-          )}
+        {/* Funil de leads */}
+        <div style={{ background: "var(--bg-white)", padding: "24px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)" }}>
+          <p style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "16px" }}>Funil de Leads</p>
+          <Funnel steps={funnelSteps} />
         </div>
 
       </div>
-
-      {/* Ranking de Conversão por Responsável se Master */}
-      {isMaster && (
-        <div style={{ background: "var(--bg-white)", padding: "28px", borderRadius: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow)", marginTop: "24px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-            <h3 style={{ fontSize: "1rem", fontWeight: 600, color: "var(--text-primary)", margin: 0 }}>🏆 Ranking de Conversões por Responsável</h3>
-            <select
-              className="filter-select"
-              style={{ minWidth: "150px", height: "34px", padding: "0 8px" }}
-              value={rankingPeriodo}
-              onChange={(e) => setRankingPeriodo(e.target.value)}
-            >
-              <option value="hoje">Hoje</option>
-              <option value="7dias">Últimos 7 dias</option>
-              <option value="30dias">Últimos 30 dias</option>
-            </select>
-          </div>
-
-          {rankingLoading ? (
-            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Carregando ranking...</p>
-          ) : ranking.length === 0 ? (
-            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", fontStyle: "italic" }}>Nenhum dado de conversão disponível para este período.</p>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              {ranking.map((item, index) => {
-                const isTop = index < 3;
-                return (
-                  <div
-                    key={item.nome}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "12px 16px",
-                      background: isTop ? "#ecfdf5" : "var(--bg-main)",
-                      borderRadius: "8px",
-                      border: "1px solid var(--border)",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                      <span style={{
-                        width: "24px",
-                        height: "24px",
-                        borderRadius: "50%",
-                        background: isTop ? "#10b981" : "#e5e7eb",
-                        color: isTop ? "#fff" : "#4b5563",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: 700,
-                        fontSize: "0.82rem"
-                      }}>
-                        {index + 1}
-                      </span>
-                      <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-primary)" }}>{item.nome}</span>
-                    </div>
-                    <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--green-dark)" }}>
-                      {item.conversoes} conversão{item.conversoes !== 1 ? "ões" : ""}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
     </section>
   );
 }
