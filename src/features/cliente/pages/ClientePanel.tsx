@@ -356,14 +356,6 @@ export default function ClientePanel() {
                 </table>
               </div>
 
-              <button
-                className="client-report-link"
-                type="button"
-                onClick={() => setCurrentPage("relatorios")}
-              >
-                <span>Ir para a página de relatórios</span>
-                <ArrowRight size={16} />
-              </button>
             </section>
           </>
         ) : (

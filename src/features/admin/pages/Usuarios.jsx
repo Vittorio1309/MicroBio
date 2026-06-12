@@ -220,14 +220,14 @@ export default function Usuarios() {
               </div>
               {modal.mode === "novo" && (
                 <div className="modal-field">
-                  <label className="form-label">Role</label>
+                  <label className="form-label">Tipo de acesso</label>
                   <select
                     className="modal-input"
                     value={form.role}
                     onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
                   >
-                    <option value="USER">ROLE_USER</option>
-                    <option value="ADMIN">ROLE_ADMIN</option>
+                    <option value="USER">Usuário</option>
+                    <option value="ADMIN">Admin</option>
                   </select>
                 </div>
               )}
